@@ -26,3 +26,16 @@ export const SensorContainer = styled.View`
   border-radius: 20px;
   height: 80px;
 `;
+
+export const AlarmContainer = styled.View`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-color: #bdbdbdff;
+  border-width: 2px;
+  border-radius: 20px;
+  height: 50px;
+  padding: 10px 20px;
+  margin-bottom: 5px;
+`;
