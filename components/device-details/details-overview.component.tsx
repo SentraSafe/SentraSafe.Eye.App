@@ -1,10 +1,11 @@
+import { Machine } from "@/types/machine";
 import { Ionicons } from "@expo/vector-icons";
 import { FC } from "react";
 import { Text } from "react-native";
 import { Overview, OverviewLabel, Wrapper } from "./device-details.styled";
 
 const DetailsOverview: FC<{ deviceName: string }> = ({ deviceName }) => {
-  const machineDetails = {
+  const machineDetails: Machine = {
     name: "Maskine 1",
     location: "Afdeling A1",
     status: "Running",

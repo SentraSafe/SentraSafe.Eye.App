@@ -130,6 +130,7 @@ export default function Index() {
               paddingHorizontal: 30,
               paddingVertical: 10,
             }}
+            onPress={() => router.push("/(modals)/machine/machine-filter")}
           >
             <Text style={{ color: "#fff" }}>Filtre</Text>
           </Pressable>
@@ -193,7 +194,7 @@ export default function Index() {
           justifyContent: "center",
           flexDirection: "row",
         }}
-        onPress={() => router.push("/(modals)/add-machine")}
+        onPress={() => router.push("/(modals)/machine/add-machine")}
       >
         <Ionicons name="add" color="#fff" style={{ fontSize: 22 }} />
       </Pressable>

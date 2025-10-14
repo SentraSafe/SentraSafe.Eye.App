@@ -28,7 +28,7 @@ export default function DrawerLayout() {
   return (
     <Drawer
       drawerContent={(props) => (
-        <DrawerContentScrollView style={{ backgroundColor: "#0c1117" }}>
+        <DrawerContentScrollView>
           <View>
             <Pressable onPress={props.navigation.closeDrawer}>
               <Ionicons name="close" size={24} />

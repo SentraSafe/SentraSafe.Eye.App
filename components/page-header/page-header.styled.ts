@@ -13,7 +13,8 @@ export const Wrapper = styled.View`
 export const StyledContainer = styled.View`
   flex-direction: row;
   width: 100%;
-  height: 120px;
+  height: 80px;
   padding-top: 35px;
   padding-right: 20px;
+  background-color: #fff;
 `;
