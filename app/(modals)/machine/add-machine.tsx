@@ -1,53 +1,71 @@
+import FormButton from "@/components/buttons/form-button.component";
 import DropdownInputGroup from "@/components/input-group/dropdown-input-group.component";
 import TextInputGroup from "@/components/input-group/text-input-group.component";
 import { ModalView } from "@/components/modal/modal.styled";
-import { FC, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { submitCreateMachine } from "@/lib/api/machine/machine-api";
+import { CreateMachine } from "@/lib/api/machine/machine-api.types";
+import { LocationContext } from "@/lib/hooks/contexts/location-context";
+import { FC, use, useMemo, useState } from "react";
+import { View } from "react-native";
 
 const AddMachine: FC = () => {
-  const [nameValue, setNameValue] = useState<string | null>(null);
-  const [locationValue, setLocationValue] = useState<string | null>(null);
-  const [subLocationValue, setSubLocationValue] = useState<string | null>(null);
-  const [machineTypeValue, setMachineTypeValue] = useState<string | null>(null);
+  const { locations } = use(LocationContext);
+  const [machine, setMachine] = useState<CreateMachine>({});
+
+  const subLocations = useMemo(() => {
+    return (
+      locations.find((location) => location.id === machine?.locationId)
+        ?.sublocations ?? locations.flatMap((x) => x.sublocations)
+    );
+  }, [locations, machine?.locationId]);
 
   return (
     <ModalView>
       <TextInputGroup
         label="Navn"
         placeholder="Navn på maskinen"
-        setValue={setNameValue}
+        setValue={(value) => setMachine({ ...machine, name: value as string })}
       ></TextInputGroup>
       <DropdownInputGroup
-        setValue={setLocationValue}
+        setValue={(value) => {
+          console.log("value", value);
+          setMachine({ ...machine, locationId: value as number });
+          console.log("machine", machine);
+        }}
         label={"Lokation"}
         placeholder={"Vælg en lokation"}
-        values={[{ label: "Aarhus", value: 1 }]}
+        values={locations.map((x) => ({ label: x.name, value: x.id }))}
       />
       <DropdownInputGroup
-        setValue={setLocationValue}
+        setValue={(value) =>
+          setMachine({ ...machine, sublocationId: value as number })
+        }
         label={"Intern lokation"}
         placeholder={"Vælg en intern lokation"}
-        values={[{ label: "Aarhus", value: 1 }]}
+        values={subLocations.map((subLocation) => ({
+          label: subLocation.name,
+          value: subLocation.id,
+        }))}
       />
       <DropdownInputGroup
-        setValue={setLocationValue}
+        setValue={(value) =>
+          setMachine({ ...machine, machineType: value as number })
+        }
         label={"Maskine type"}
         placeholder={"Vælg en maskine type"}
-        values={[{ label: "Aarhus", value: 1 }]}
+        values={[
+          { label: "Server", value: 0 },
+          { label: "Other", value: 1 },
+        ]}
       />
       <View style={{ alignItems: "center", marginTop: 20 }}>
-        <Pressable
-          style={{
-            borderRadius: 10,
-            backgroundColor: "#000",
-            paddingHorizontal: 20,
-            alignItems: "center",
-            paddingVertical: 10,
-            width: "30%",
+        <FormButton
+          onPress={async () => {
+            await submitCreateMachine(machine);
           }}
         >
-          <Text style={{ color: "#fff", fontSize: 20 }}>Tilføj</Text>
-        </Pressable>
+          Tilføj
+        </FormButton>
       </View>
     </ModalView>
   );

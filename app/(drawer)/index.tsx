@@ -1,11 +1,15 @@
-﻿import { Container } from "@/components/containers/containers.styled";
+﻿import AddButton from "@/components/buttons/add-button.component";
+import { Container } from "@/components/containers/containers.styled";
 import FilterViewButton from "@/components/filter-elements/filter-view-button.component";
 import CarouselItem from "@/components/machine-carousel/carousel-item.component";
 import { LargeHeader } from "@/components/text-elements/text-elements.styled";
-import { Machine } from "@/types/machine";
-import { Ionicons } from "@expo/vector-icons";
+import { getLocations } from "@/lib/api/location/location-api";
+import { getMachines } from "@/lib/api/machine/machine-api";
+import { Machine } from "@/lib/api/machine/machine-api.types";
+import { LocationContext } from "@/lib/hooks/contexts/location-context";
+import { MachineFilterContext } from "@/lib/hooks/contexts/machine-context";
 import { useRouter } from "expo-router";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { use, useEffect, useMemo, useRef, useState } from "react";
 import { Dimensions, Pressable, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { interpolate } from "react-native-reanimated";
@@ -17,65 +21,33 @@ import Carousel, {
 export default function Index() {
   const windowDimensions = Dimensions.get("window");
 
-  const initMachines: Machine[] = useMemo(
-    () => [
-      {
-        name: "Machine 1",
-        status: "Running",
-        location: "B1",
-      },
-      {
-        name: "Machine 2",
-        status: "Running",
-        location: "B1",
-      },
-      {
-        name: "Machine 3",
-        status: "Running",
-        location: "B1",
-      },
-      {
-        name: "Machine 4",
-        status: "Running",
-        location: "B1",
-      },
-      {
-        name: "Machine 5",
-        status: "Running",
-        location: "B1",
-      },
-      {
-        name: "Machine 6",
-        status: "Running",
-        location: "B1",
-      },
-      {
-        name: "Machine 7",
-        status: "Running",
-        location: "B1",
-      },
-      {
-        name: "Machine 8",
-        status: "Running",
-        location: "B1",
-      },
-    ],
-    []
-  );
+  const [machines, setMachines] = useState<Machine[]>([]);
 
-  const [machines, setMachines] = useState<Machine[][]>(
-    initMachines.map((x) => [x])
-  );
+  const { setLocations } = use(LocationContext);
+  const { machineFilter } = use(MachineFilterContext);
 
   const [groupSize, setGroupSize] = useState(1);
 
   useEffect(() => {
+    const getData = async () => {
+      const [machinesResponse, locationsResponse] = await Promise.all([
+        getMachines(machineFilter),
+        getLocations(),
+      ]);
+
+      setMachines(machinesResponse);
+      setLocations(locationsResponse);
+    };
+    getData();
+  }, [machineFilter, setLocations]);
+
+  const arrangedMachines = useMemo(() => {
     const arrangedMachines: Machine[][] = [];
-    for (let i = 0; i < initMachines.length; i += groupSize) {
-      arrangedMachines.push(initMachines.slice(i, i + groupSize));
+    for (let i = 0; i < machines.length; i += groupSize) {
+      arrangedMachines.push(machines.slice(i, i + groupSize));
     }
-    setMachines(arrangedMachines);
-  }, [initMachines, groupSize]);
+    return arrangedMachines;
+  }, [machines, groupSize]);
 
   const carouselItemWidth = windowDimensions.width - 20;
   const carouselItemHeight = 300;
@@ -158,7 +130,7 @@ export default function Index() {
 
         <Carousel
           ref={carousel}
-          data={machines}
+          data={arrangedMachines}
           renderItem={({ item }) => (
             <CarouselItem
               width={carouselItemWidth}
@@ -181,23 +153,7 @@ export default function Index() {
           customAnimation={animationStyle}
         ></Carousel>
       </Container>
-      <Pressable
-        style={{
-          borderRadius: 100,
-          backgroundColor: "#000",
-          position: "absolute",
-          bottom: 40,
-          left: (windowDimensions.width - 50) / 2,
-          height: 50,
-          width: 50,
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
-        }}
-        onPress={() => router.push("/(modals)/machine/add-machine")}
-      >
-        <Ionicons name="add" color="#fff" style={{ fontSize: 22 }} />
-      </Pressable>
+      <AddButton href="/(modals)/machine/add-machine" />
     </GestureHandlerRootView>
   );
 }

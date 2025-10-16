@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Text, View } from "react-native";
-import { OverviewLabel, SensorContainer } from "./device-details.styled";
+import { OverviewLabel, SensorContainer } from "../device-details.styled";
 
 type Sensor = {
   type: "temperature" | "humidity" | "other";

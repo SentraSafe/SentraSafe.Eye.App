@@ -1,4 +1,4 @@
-import { Machine } from "@/types/machine";
+import { Machine } from "@/lib/api/machine/machine-api.types";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { FC } from "react";
@@ -44,7 +44,7 @@ const CarouselItem: FC<Props> = ({ groupSize, machines, width, height }) => {
                   </TextWrapper>
                   <TextWrapper>
                     <MediumTextBold>Status: </MediumTextBold>
-                    <MediumText>{x.status}</MediumText>
+                    <MediumText>Running</MediumText>
                   </TextWrapper>
                 </View>
               )}

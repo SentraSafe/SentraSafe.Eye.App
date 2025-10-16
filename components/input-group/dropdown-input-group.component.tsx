@@ -3,7 +3,7 @@ import { FC } from "react";
 import { Container, Label, StyledPickerContainer } from "./input-group.styled";
 
 type Props = {
-  setValue: (value: string) => void;
+  setValue: (value: unknown) => void;
   label: string;
   placeholder: string;
   values: PickerItem[];
@@ -24,7 +24,8 @@ const DropdownInputGroup: FC<Props> = ({
     <Container>
       <Label>{label}:</Label>
       <StyledPickerContainer>
-        <Picker>
+        <Picker onValueChange={(value, index) => setValue(value)}>
+          <Picker.Item key="default" label="" value={-1} />
           {values.map((item, index) => (
             <Picker.Item key={index} label={item.label} value={item.value} />
           ))}

@@ -1,30 +1,24 @@
-import { Machine } from "@/types/machine";
+import { Machine } from "@/lib/api/machine/machine-api.types";
 import { Ionicons } from "@expo/vector-icons";
 import { FC } from "react";
 import { Text } from "react-native";
-import { Overview, OverviewLabel, Wrapper } from "./device-details.styled";
+import { Overview, OverviewLabel, Wrapper } from "../device-details.styled";
 
-const DetailsOverview: FC<{ deviceName: string }> = ({ deviceName }) => {
-  const machineDetails: Machine = {
-    name: "Maskine 1",
-    location: "Afdeling A1",
-    status: "Running",
-  };
-
+const DetailsOverview: FC<{ machine?: Machine }> = ({ machine }) => {
   return (
     <Overview>
       <Wrapper>
         <OverviewLabel>Navn: </OverviewLabel>
-        <Text>{deviceName}</Text>
+        <Text>{machine?.name}</Text>
       </Wrapper>
       <Wrapper>
         <OverviewLabel>Lokation: </OverviewLabel>
-        <Text>{machineDetails.location}</Text>
+        <Text>{machine?.location}</Text>
       </Wrapper>
       <Wrapper>
         <OverviewLabel>Status: </OverviewLabel>
         <Ionicons name="play-circle-outline" style={{ color: "#0f1" }} />
-        <Text> {machineDetails.status}</Text>
+        <Text> Running</Text>
       </Wrapper>
     </Overview>
   );
