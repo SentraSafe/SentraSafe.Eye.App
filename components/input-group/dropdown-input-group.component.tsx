@@ -8,6 +8,7 @@ type Props = {
   placeholder: string;
   values: PickerItem[];
   initialValue?: any;
+  disabled?: boolean;
 };
 
 type PickerItem = {
@@ -21,6 +22,7 @@ const DropdownInputGroup: FC<Props> = ({
   setValue,
   values,
   initialValue,
+  disabled,
 }) => {
   return (
     <Container>
@@ -29,6 +31,7 @@ const DropdownInputGroup: FC<Props> = ({
         <Picker
           onValueChange={(value, index) => setValue(value)}
           selectedValue={initialValue}
+          enabled={disabled}
         >
           <Picker.Item
             key="default"

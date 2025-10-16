@@ -18,7 +18,7 @@ export const Wrapper = styled.View`
   align-items: center;
 `;
 
-export const SensorContainer = styled.View`
+export const MeasurementContainer = styled.View`
   flex-basis: 48%;
   padding: 20px;
   border-color: #bdbdbdff;

@@ -9,8 +9,21 @@ import { Machine } from "@/lib/api/machine/machine-api.types";
 import { LocationContext } from "@/lib/hooks/contexts/location-context";
 import { MachineFilterContext } from "@/lib/hooks/contexts/machine-context";
 import { useFocusEffect, useRouter } from "expo-router";
-import React, { use, useEffect, useMemo, useRef, useState } from "react";
-import { Dimensions, Pressable, Text, View } from "react-native";
+import React, {
+  use,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { interpolate } from "react-native-reanimated";
 import Carousel, {
@@ -22,28 +35,33 @@ export default function Index() {
   const windowDimensions = Dimensions.get("window");
 
   const [machines, setMachines] = useState<Machine[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const { setLocations } = use(LocationContext);
   const { machineFilter } = use(MachineFilterContext);
 
   const [groupSize, setGroupSize] = useState(1);
 
-  useFocusEffect(() => {
-    console.log("filter:", machineFilter);
-    const getData = async () => {
-      const [machinesResponse, locationsResponse] = await Promise.all([
-        getMachines(machineFilter),
-        getLocations(),
-      ]);
+  useFocusEffect(
+    useCallback(() => {
+      console.log("filter:", machineFilter);
+      const getData = async () => {
+        setLoading(true);
+        const [machinesResponse, locationsResponse] = await Promise.all([
+          getMachines(machineFilter),
+          getLocations(),
+        ]);
 
-      const [machineData] = machinesResponse;
-      const [locationData] = locationsResponse;
+        const [machineData] = machinesResponse;
+        const [locationData] = locationsResponse;
 
-      setMachines(machineData ?? []);
-      setLocations(locationData);
-    };
-    getData();
-  });
+        setMachines(machineData ?? []);
+        setLocations(locationData);
+        setLoading(false);
+      };
+      getData();
+    }, [machineFilter, setLocations])
+  );
 
   const arrangedMachines = useMemo(() => {
     const arrangedMachines: Machine[][] = [];
@@ -132,30 +150,34 @@ export default function Index() {
           </View>
         </View>
 
-        <Carousel
-          ref={carousel}
-          data={arrangedMachines}
-          renderItem={({ item }) => (
-            <CarouselItem
-              width={carouselItemWidth}
-              height={carouselItemHeight}
-              groupSize={groupSize}
-              machines={item}
-            />
-          )}
-          width={carouselItemWidth}
-          loop={false}
-          height={carouselItemHeight}
-          snapEnabled={false}
-          pagingEnabled={true}
-          style={{ width: windowDimensions.width }}
-          mode="parallax"
-          modeConfig={{
-            parallaxScrollingScale: 1,
-            parallaxAdjacentItemScale: 1,
-          }}
-          customAnimation={animationStyle}
-        ></Carousel>
+        {loading ? (
+          <ActivityIndicator />
+        ) : (
+          <Carousel
+            ref={carousel}
+            data={arrangedMachines}
+            renderItem={({ item }) => (
+              <CarouselItem
+                width={carouselItemWidth}
+                height={carouselItemHeight}
+                groupSize={groupSize}
+                machines={item}
+              />
+            )}
+            width={carouselItemWidth}
+            loop={false}
+            height={carouselItemHeight}
+            snapEnabled={false}
+            pagingEnabled={true}
+            style={{ width: windowDimensions.width }}
+            mode="parallax"
+            modeConfig={{
+              parallaxScrollingScale: 1,
+              parallaxAdjacentItemScale: 1,
+            }}
+            customAnimation={animationStyle}
+          ></Carousel>
+        )}
       </Container>
       <AddButton href="/(modals)/machine/add-machine" />
     </GestureHandlerRootView>

@@ -24,8 +24,8 @@ const CarouselItem: FC<Props> = ({ groupSize, machines, width, height }) => {
       {machines.map((x, index) => (
         <Link
           href={{
-            pathname: "/(drawer)/device/[deviceId]",
-            params: { deviceId: x.name },
+            pathname: "/(drawer)/machines/[machineId]",
+            params: { machineId: x.name },
           }}
           style={{ marginBottom: 10 }}
           key={index}

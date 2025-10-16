@@ -12,6 +12,7 @@ import { View } from "react-native";
 const AddMachine: FC = () => {
   const { locations } = use(LocationContext);
   const [machine, setMachine] = useState<CreateMachine>({});
+  const [submitted, setSubmitted] = useState(false);
 
   const subLocations = useMemo(() => {
     return (
@@ -26,16 +27,16 @@ const AddMachine: FC = () => {
         label="Navn"
         placeholder="Navn på maskinen"
         setValue={(value) => setMachine({ ...machine, name: value as string })}
+        disabled={submitted}
       ></TextInputGroup>
       <DropdownInputGroup
         setValue={(value) => {
-          console.log("value", value);
           setMachine({ ...machine, locationId: value as number });
-          console.log("machine", machine);
         }}
         label={"Lokation"}
         placeholder={"Vælg en lokation"}
         values={locations.map((x) => ({ label: x.name, value: x.id }))}
+        disabled={submitted}
       />
       <DropdownInputGroup
         setValue={(value) =>
@@ -47,6 +48,7 @@ const AddMachine: FC = () => {
           label: subLocation.name,
           value: subLocation.id,
         }))}
+        disabled={submitted}
       />
       <DropdownInputGroup
         setValue={(value) =>
@@ -58,11 +60,15 @@ const AddMachine: FC = () => {
           { label: "Server", value: 0 },
           { label: "Other", value: 1 },
         ]}
+        disabled={submitted}
       />
       <View style={{ alignItems: "center", marginTop: 20 }}>
         <FormButton
+          withLoader={true}
           onPress={async () => {
+            setSubmitted(true);
             const [, error] = await submitCreateMachine(machine);
+            setSubmitted(false);
 
             if (!error) router.dismiss();
           }}

@@ -2,7 +2,7 @@ import { Machine } from "@/lib/api/machine/machine-api.types";
 import { Ionicons } from "@expo/vector-icons";
 import { FC } from "react";
 import { Text } from "react-native";
-import { Overview, OverviewLabel, Wrapper } from "../device-details.styled";
+import { Overview, OverviewLabel, Wrapper } from "../machine-details.styled";
 
 const DetailsOverview: FC<{ machine?: Machine }> = ({ machine }) => {
   return (

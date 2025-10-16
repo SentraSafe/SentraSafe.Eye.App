@@ -4,26 +4,28 @@
   MenuItemButtonWrapper,
 } from "@/components/drawer-menu/drawer-menu.styled";
 import PageHeader from "@/components/page-header/page-header.component";
+import useSignalR from "@/lib/hooks/signalr-clients/signalr-client-hook";
 import { Ionicons } from "@expo/vector-icons";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
 import { Link } from "expo-router";
 import { Drawer } from "expo-router/drawer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-type Notification = {
-  text: string;
-  severity: "critical" | "warning";
-  deviceId: string;
-};
-
 export default function DrawerLayout() {
-  const [notifications, setNotifications] = useState(
-    new Array<Notification>(
-      { text: "server down", severity: "critical", deviceId: "a" },
-      { text: "device malfunctioned", severity: "warning", deviceId: "b" }
-    )
-  );
+  const [notifications, setNotifications] = useState<any[]>([]);
+
+  const { subscribe, unsubscribe } = useSignalR("logs");
+
+  useEffect(() => {
+    subscribe(null, "messages", (payload) => {
+      setNotifications([...notifications, payload]);
+    });
+
+    return () => {
+      unsubscribe(null, "messages");
+    };
+  }, [subscribe, unsubscribe]);
 
   return (
     <Drawer
@@ -60,8 +62,8 @@ export default function DrawerLayout() {
               </MenuItemButtonWrapper>
               <Link
                 href={{
-                  pathname: "/device/[deviceId]",
-                  params: { deviceId: notification.deviceId },
+                  pathname: "/machines/[machineId]",
+                  params: { machineId: notification.deviceId },
                 }}
               >
                 <Ionicons

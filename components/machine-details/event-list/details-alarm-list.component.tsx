@@ -3,8 +3,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { FC } from "react";
 import { FlatList, Text, View } from "react-native";
 import { LargeHeader } from "../../text-elements/text-elements.styled";
-import { AlarmContainer, Wrapper } from "../device-details.styled";
-import Button from "./event-list-button.component";
+import { AlarmContainer, Wrapper } from "../machine-details.styled";
+import Button from "./alarm-list-button.component";
 
 type Props = {
   machineId: number;
@@ -36,8 +36,8 @@ const DetailsEventList: FC<Props> = ({ alarms, machineId }) => {
                 backgroundColor="#63c1ff"
                 href={{
                   pathname:
-                    "/(drawer)/device/[deviceId]/alarm-details/[alarmId]",
-                  params: { deviceId: machineId, alarmId: item.id },
+                    "/(drawer)/machines/[machineId]/alarm-details/[alarmId]",
+                  params: { machineId: machineId, alarmId: Number(item.id) },
                 }}
                 icon="information"
               />

@@ -1,13 +1,21 @@
-import { FC, ReactNode } from "react";
-import { Pressable, Text } from "react-native";
+import { FC, ReactNode, useState } from "react";
+import { ActivityIndicator, Pressable, Text } from "react-native";
 
 type Props = {
   buttonText?: string;
   children: ReactNode;
-  onPress: () => void;
+  onPress: (() => Promise<any>) | (() => any);
+  withLoader?: boolean;
 };
 
-const FormButton: FC<Props> = ({ buttonText, children, onPress }) => {
+const FormButton: FC<Props> = ({
+  buttonText,
+  children,
+  onPress,
+  withLoader,
+}) => {
+  const [loading, setLoading] = useState(false);
+
   return (
     <Pressable
       style={{
@@ -18,11 +26,17 @@ const FormButton: FC<Props> = ({ buttonText, children, onPress }) => {
         paddingVertical: 10,
         width: "30%",
       }}
-      onPress={onPress}
+      onPress={async () => {
+        setLoading(true);
+        await onPress();
+        setLoading(false);
+      }}
+      disabled={withLoader && loading}
     >
       <Text style={{ color: "#fff", fontSize: 20 }}>
         {buttonText ?? children}
       </Text>
+      {withLoader && loading && <ActivityIndicator />}
     </Pressable>
   );
 };

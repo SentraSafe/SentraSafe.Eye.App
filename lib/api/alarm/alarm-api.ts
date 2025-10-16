@@ -2,6 +2,8 @@ import {
   CreateAlarmRequestBody,
   GetAlarmResponse,
   GetAlarmsResponse,
+  HandleAlarmRequestBody,
+  UpdateAlarmRequestBody,
 } from "./alarm-api.types";
 
 const baseUrl = "http://10.131.9.151:6971";
@@ -38,6 +40,38 @@ export const submitCreateAlarm = async (
   const response = await fetch(url, {
     body: JSON.stringify(alarm),
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) return [undefined, "Error"];
+
+  return [await response.json(), undefined];
+};
+
+export const submitUpdateAlarm = async (
+  alarm: UpdateAlarmRequestBody
+): Promise<GetAlarmResponse> => {
+  const url = new URL(basePath, baseUrl);
+  const response = await fetch(url, {
+    body: JSON.stringify(alarm),
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) return [undefined, "Error"];
+
+  return [await response.json(), undefined];
+};
+
+export const submitHandleAlarm = async (
+  alarm: HandleAlarmRequestBody
+): Promise<any> => {
+  const url = new URL(basePath, baseUrl);
+  const response = await fetch(url, {
+    body: JSON.stringify(alarm),
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },

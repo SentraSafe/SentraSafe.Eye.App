@@ -2,10 +2,11 @@ import { FC } from "react";
 import { Container, Label, StyledTextInput } from "./input-group.styled";
 
 type Props = {
-  setValue: (value: string) => void;
+  setValue?: (value: string) => void;
   label: string;
-  placeholder: string;
+  placeholder?: string;
   initialValue?: string;
+  disabled?: boolean;
 };
 
 const TextInputGroup: FC<Props> = ({
@@ -13,6 +14,7 @@ const TextInputGroup: FC<Props> = ({
   placeholder,
   setValue,
   initialValue,
+  disabled,
 }) => {
   return (
     <Container>
@@ -21,6 +23,7 @@ const TextInputGroup: FC<Props> = ({
         placeholder={placeholder}
         onChangeText={setValue}
         value={initialValue}
+        readOnly={disabled}
       />
     </Container>
   );
