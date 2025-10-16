@@ -8,6 +8,7 @@ export const StyledIcon = styled(Ionicons)`
 
 export const Wrapper = styled.View`
   flex: 1;
+  margin-left: 20px;
 `;
 
 export const StyledContainer = styled.View`

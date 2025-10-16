@@ -7,6 +7,7 @@ type Props = {
   label: string;
   placeholder: string;
   values: PickerItem[];
+  initialValue?: any;
 };
 
 type PickerItem = {
@@ -19,13 +20,23 @@ const DropdownInputGroup: FC<Props> = ({
   placeholder,
   setValue,
   values,
+  initialValue,
 }) => {
   return (
     <Container>
       <Label>{label}:</Label>
       <StyledPickerContainer>
-        <Picker onValueChange={(value, index) => setValue(value)}>
-          <Picker.Item key="default" label="" value={-1} />
+        <Picker
+          onValueChange={(value, index) => setValue(value)}
+          selectedValue={initialValue}
+        >
+          <Picker.Item
+            key="default"
+            label="Vælg en mulighed"
+            value={null}
+            enabled={true}
+            color="grey"
+          />
           {values.map((item, index) => (
             <Picker.Item key={index} label={item.label} value={item.value} />
           ))}

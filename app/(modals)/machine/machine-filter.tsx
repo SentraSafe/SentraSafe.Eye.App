@@ -13,7 +13,7 @@ const MachineFilterModal: FC = () => {
   const { machineFilter, setMachineFilter } = use(MachineFilterContext);
   const { locations } = use(LocationContext);
 
-  const [filter, setFilter] = useState<MachineFilter>({});
+  const [filter, setFilter] = useState<MachineFilter>({ ...machineFilter });
 
   const subLocations = useMemo(() => {
     return (
@@ -28,6 +28,7 @@ const MachineFilterModal: FC = () => {
         label="Navn"
         placeholder="Navn på maskinen"
         setValue={(value) => setFilter({ ...filter, name: value as string })}
+        initialValue={filter.name}
       ></TextInputGroup>
       <DropdownInputGroup
         setValue={(value) =>
@@ -39,6 +40,7 @@ const MachineFilterModal: FC = () => {
           label: location.name,
           value: location.id,
         }))}
+        initialValue={machineFilter.locationId}
       />
       <DropdownInputGroup
         setValue={(value) =>
@@ -50,6 +52,7 @@ const MachineFilterModal: FC = () => {
           label: subLocation.name,
           value: subLocation.id,
         }))}
+        initialValue={machineFilter.sublocationId}
       />
       <DropdownInputGroup
         setValue={(value) =>
@@ -61,11 +64,12 @@ const MachineFilterModal: FC = () => {
           { label: "Server", value: 0 },
           { label: "Other", value: 1 },
         ]}
+        initialValue={machineFilter.machineType}
       />
       <View style={{ alignItems: "center", justifyContent: "center" }}>
         <FormButton
           onPress={() => {
-            setMachineFilter(machineFilter);
+            setMachineFilter(filter);
             router.dismiss();
           }}
         >

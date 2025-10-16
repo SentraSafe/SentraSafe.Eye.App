@@ -1,4 +1,7 @@
-export type GetMachineResponse = Machine;
+import { ApiResponse } from "../shared-api.types";
+
+export type GetMachineResponse = ApiResponse<Machine, string>;
+export type GetMachinesResponse = ApiResponse<Machine[], string>;
 export type GetMachinesRequestParams = MachineFilter;
 export type SubmitCreateMachineRequestBody = CreateMachine;
 

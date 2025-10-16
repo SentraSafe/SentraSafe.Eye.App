@@ -16,10 +16,21 @@ export default function ModalLayout() {
           backgroundColor: "rgba(0,0,0,0.4)",
           justifyContent: "flex-end",
         },
-        header: () => (
-          <PageHeader onPress={router.dismiss} iconType="close"></PageHeader>
+        header: ({ options }) => (
+          <PageHeader onPress={router.dismiss} iconType="close">
+            {options.title}
+          </PageHeader>
         ),
       }}
-    ></Stack>
+    >
+      <Stack.Screen
+        name="machine/machine-filter"
+        options={{ title: "Maskine filtre" }}
+      />
+      <Stack.Screen
+        name="machine/add-machine"
+        options={{ title: "Tilføj maskine" }}
+      />
+    </Stack>
   );
 }

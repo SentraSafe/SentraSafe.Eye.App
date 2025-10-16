@@ -14,7 +14,7 @@ const Device: FC = () => {
   const { machineId } = useLocalSearchParams();
 
   const [machine, setMachine] = useState<Machine>();
-  const [alarms, setAlarms] = useState<Alarm[]>([]);
+  const [alarms, setAlarms] = useState<Alarm[]>();
 
   useEffect(() => {
     const getData = async () => {
@@ -23,8 +23,11 @@ const Device: FC = () => {
         getAlarms(Number(machineId)),
       ]);
 
-      setMachine(machineResponse);
-      setAlarms(alarmsResponse ?? []);
+      const [machineData] = machineResponse;
+      const [alarmData] = alarmsResponse;
+
+      setMachine(machineData);
+      setAlarms(alarmData);
     };
     getData();
   }, [machineId]);
@@ -35,7 +38,7 @@ const Device: FC = () => {
       <SensorOverview></SensorOverview>
       <DetailsEventList
         machineId={Number(machine?.id)}
-        alarms={alarms}
+        alarms={alarms ?? []}
       ></DetailsEventList>
       <AddButton href="/(modals)/alarm/add-alarm" />
     </View>

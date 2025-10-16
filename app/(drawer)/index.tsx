@@ -8,7 +8,7 @@ import { getMachines } from "@/lib/api/machine/machine-api";
 import { Machine } from "@/lib/api/machine/machine-api.types";
 import { LocationContext } from "@/lib/hooks/contexts/location-context";
 import { MachineFilterContext } from "@/lib/hooks/contexts/machine-context";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import React, { use, useEffect, useMemo, useRef, useState } from "react";
 import { Dimensions, Pressable, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -28,18 +28,22 @@ export default function Index() {
 
   const [groupSize, setGroupSize] = useState(1);
 
-  useEffect(() => {
+  useFocusEffect(() => {
+    console.log("filter:", machineFilter);
     const getData = async () => {
       const [machinesResponse, locationsResponse] = await Promise.all([
         getMachines(machineFilter),
         getLocations(),
       ]);
 
-      setMachines(machinesResponse);
-      setLocations(locationsResponse);
+      const [machineData] = machinesResponse;
+      const [locationData] = locationsResponse;
+
+      setMachines(machineData ?? []);
+      setLocations(locationData);
     };
     getData();
-  }, [machineFilter, setLocations]);
+  });
 
   const arrangedMachines = useMemo(() => {
     const arrangedMachines: Machine[][] = [];

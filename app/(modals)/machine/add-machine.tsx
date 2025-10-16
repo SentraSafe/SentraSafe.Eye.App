@@ -5,6 +5,7 @@ import { ModalView } from "@/components/modal/modal.styled";
 import { submitCreateMachine } from "@/lib/api/machine/machine-api";
 import { CreateMachine } from "@/lib/api/machine/machine-api.types";
 import { LocationContext } from "@/lib/hooks/contexts/location-context";
+import { router } from "expo-router";
 import { FC, use, useMemo, useState } from "react";
 import { View } from "react-native";
 
@@ -61,7 +62,9 @@ const AddMachine: FC = () => {
       <View style={{ alignItems: "center", marginTop: 20 }}>
         <FormButton
           onPress={async () => {
-            await submitCreateMachine(machine);
+            const [, error] = await submitCreateMachine(machine);
+
+            if (!error) router.dismiss();
           }}
         >
           Tilføj

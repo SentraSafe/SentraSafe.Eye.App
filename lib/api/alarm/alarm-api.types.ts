@@ -1,5 +1,8 @@
-export type GetAlarmResponse = Alarm;
+import { ApiResponse } from "../shared-api.types";
+
 export type CreateAlarmRequestBody = CreateAlarm;
+export type GetAlarmResponse = ApiResponse<Alarm, string>;
+export type GetAlarmsResponse = ApiResponse<Alarm[], string>;
 
 export type Alarm = {
   id: number;
@@ -16,4 +19,5 @@ export type CreateAlarm = {
   severity?: number;
   measurementType?: number;
   maximumValue?: number;
+  machineId: number;
 };

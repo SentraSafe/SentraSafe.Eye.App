@@ -5,13 +5,23 @@ type Props = {
   setValue: (value: string) => void;
   label: string;
   placeholder: string;
+  initialValue?: string;
 };
 
-const TextInputGroup: FC<Props> = ({ label, placeholder, setValue }) => {
+const TextInputGroup: FC<Props> = ({
+  label,
+  placeholder,
+  setValue,
+  initialValue,
+}) => {
   return (
     <Container>
       <Label>{label}:</Label>
-      <StyledTextInput placeholder={placeholder} onChangeText={setValue} />
+      <StyledTextInput
+        placeholder={placeholder}
+        onChangeText={setValue}
+        value={initialValue}
+      />
     </Container>
   );
 };
