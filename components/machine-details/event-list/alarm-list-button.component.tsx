@@ -11,10 +11,11 @@ import { Pressable } from "react-native";
 type Props = {
   icon: keyof typeof Ionicons.glyphMap;
   backgroundColor: string;
-  href: Href | { pathname: RelativePathString; params?: UnknownInputParams };
+  href?: Href | { pathname: RelativePathString; params?: UnknownInputParams };
+  onPress?: () => void;
 };
 
-const Button: FC<Props> = ({ icon, backgroundColor, href }) => {
+const Button: FC<Props> = ({ icon, backgroundColor, href, onPress }) => {
   const router = useRouter();
   return (
     <Pressable
@@ -26,7 +27,10 @@ const Button: FC<Props> = ({ icon, backgroundColor, href }) => {
         width: 35,
         backgroundColor: backgroundColor,
       }}
-      onPress={() => router.push(href)}
+      onPress={() => {
+        if (onPress) onPress();
+        if (href) router.push(href);
+      }}
     >
       <Ionicons style={{ fontSize: 20 }} name={icon} color="white" />
     </Pressable>

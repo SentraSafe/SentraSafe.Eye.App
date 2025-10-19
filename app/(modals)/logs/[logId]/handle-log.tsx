@@ -1,31 +1,34 @@
 import FormButton from "@/components/buttons/form-button.component";
 import TextInputGroup from "@/components/input-group/text-input-group.component";
 import { ModalView } from "@/components/modal/modal.styled";
-import { submitHandleAlarm } from "@/lib/api/alarm/alarm-api";
-import { HandleAlarm } from "@/lib/api/alarm/alarm-api.types";
+import { submitHandleLog } from "@/lib/api/logs/logs-api";
+import { HandledLog } from "@/lib/api/logs/logs-api.types";
 import { HandleAlarmContext } from "@/lib/hooks/contexts/alarm-context";
 import { router } from "expo-router";
 import { FC, use, useState } from "react";
 import { View } from "react-native";
 
 const HandleAlarmModal: FC = () => {
-  const { alarmToHandle, setAlarmToHandle } = use(HandleAlarmContext);
-  const [alarm, setAlarm] = useState<HandleAlarm>({
-    id: alarmToHandle?.id,
-    handledBy: alarmToHandle?.handledBy,
-  });
+  const { logToHandle, setLogToHandle } = use(HandleAlarmContext);
+  const [handle, setHandle] = useState<HandledLog>({
+    id: logToHandle?.id,
+  } as HandledLog);
   const [submitted, setSubmitted] = useState(false);
 
   return (
     <ModalView>
       <TextInputGroup
         label="Håndteret af"
-        initialValue={alarm.handledBy}
-        disabled={true}
+        placeholder="Håndteret af"
+        setValue={(value) =>
+          setHandle({ ...handle, handledBy: value as string })
+        }
+        initialValue={handle.handledBy}
+        disabled={false}
       ></TextInputGroup>
       <TextInputGroup
         setValue={(value) =>
-          setAlarm({ ...alarm, description: value as string })
+          setHandle({ ...handle, handleDescription: value as string })
         }
         label={"Beskrivelse"}
         placeholder={"Beskrivelse af problem og løsning"}
@@ -36,12 +39,12 @@ const HandleAlarmModal: FC = () => {
           withLoader={true}
           onPress={async () => {
             setSubmitted(true);
-            const [, error] = await submitHandleAlarm(alarm);
+            const [, error] = await submitHandleLog(handle);
             setSubmitted(false);
 
             if (!error) {
               router.dismiss();
-              setAlarmToHandle(null);
+              setLogToHandle(null);
             }
           }}
         >

@@ -1,12 +1,14 @@
 import { FC } from "react";
+import { InputModeOptions } from "react-native";
 import { Container, Label, StyledTextInput } from "./input-group.styled";
 
 type Props = {
   setValue?: (value: string) => void;
-  label: string;
+  label?: string;
   placeholder?: string;
   initialValue?: string;
   disabled?: boolean;
+  inputMode?: InputModeOptions;
 };
 
 const TextInputGroup: FC<Props> = ({
@@ -15,14 +17,16 @@ const TextInputGroup: FC<Props> = ({
   setValue,
   initialValue,
   disabled,
+  inputMode = "text",
 }) => {
   return (
     <Container>
-      <Label>{label}:</Label>
+      {!!label && <Label>{label}:</Label>}
       <StyledTextInput
+        inputMode={inputMode}
         placeholder={placeholder}
         onChangeText={setValue}
-        value={initialValue}
+        defaultValue={initialValue}
         readOnly={disabled}
       />
     </Container>

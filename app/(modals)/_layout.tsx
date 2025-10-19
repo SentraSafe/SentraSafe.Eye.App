@@ -31,6 +31,19 @@ export default function ModalLayout() {
         name="machine/add-machine"
         options={{ title: "Tilføj maskine" }}
       />
+      <Stack.Screen name="logs/log-filter" options={{ title: "Filter" }} />
+      <Stack.Screen
+        name="alarm/[alarmId]/edit-alarm"
+        options={{ title: "Opdater alarm" }}
+      />
+      <Stack.Screen
+        name="alarm/[machineId]/add-alarm"
+        options={{ title: "Tilføj alarm" }}
+      />
+      <Stack.Screen
+        name="logs/[logId]/handle-log"
+        options={{ title: "Håndter alarm" }}
+      />
     </Stack>
   );
 }

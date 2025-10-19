@@ -1,4 +1,5 @@
-﻿import AddButton from "@/components/buttons/add-button.component";
+﻿import FloatingButton from "@/components/buttons/add-button.component";
+import FormButton from "@/components/buttons/form-button.component";
 import { Container } from "@/components/containers/containers.styled";
 import FilterViewButton from "@/components/filter-elements/filter-view-button.component";
 import CarouselItem from "@/components/machine-carousel/carousel-item.component";
@@ -17,13 +18,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import {
-  ActivityIndicator,
-  Dimensions,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Dimensions, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { interpolate } from "react-native-reanimated";
 import Carousel, {
@@ -44,7 +39,6 @@ export default function Index() {
 
   useFocusEffect(
     useCallback(() => {
-      console.log("filter:", machineFilter);
       const getData = async () => {
         setLoading(true);
         const [machinesResponse, locationsResponse] = await Promise.all([
@@ -117,17 +111,13 @@ export default function Index() {
             alignItems: "center",
           }}
         >
-          <Pressable
-            style={{
-              backgroundColor: "#000",
-              borderRadius: 10,
-              paddingHorizontal: 30,
-              paddingVertical: 10,
-            }}
+          <FormButton
+            paddingHorizontal={30}
+            paddingVertical={10}
             onPress={() => router.push("/(modals)/machine/machine-filter")}
           >
-            <Text style={{ color: "#fff" }}>Filtre</Text>
-          </Pressable>
+            Filtre
+          </FormButton>
           <View
             style={{
               flexDirection: "row",
@@ -179,7 +169,7 @@ export default function Index() {
           ></Carousel>
         )}
       </Container>
-      <AddButton href="/(modals)/machine/add-machine" />
+      <FloatingButton icon="add" href="/(modals)/machine/add-machine" />
     </GestureHandlerRootView>
   );
 }

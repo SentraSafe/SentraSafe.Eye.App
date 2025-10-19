@@ -5,7 +5,7 @@ import {
   SubmitCreateMachineRequestBody,
 } from "./machine-api.types";
 
-const baseUrl = "http://10.131.9.151:6971";
+const baseUrl = process.env.EXPO_PUBLIC_API_URL;
 
 export const getMachines = async (
   requestParams?: GetMachinesRequestParams
@@ -28,6 +28,8 @@ export const getMachines = async (
 export const getMachine = async (id: number): Promise<GetMachineResponse> => {
   const url = new URL(`/api/machine/${id}`, baseUrl);
   const response = await fetch(url, { method: "GET" });
+
+  console.log(response);
 
   if (!response.ok) return [undefined, "Error"];
 

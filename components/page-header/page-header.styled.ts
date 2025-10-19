@@ -3,7 +3,6 @@ import styled from "styled-components/native";
 
 export const StyledIcon = styled(Ionicons)`
   font-size: 28px;
-  flex: 2;
 `;
 
 export const Wrapper = styled.View`

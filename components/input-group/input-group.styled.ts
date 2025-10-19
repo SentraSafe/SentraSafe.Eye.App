@@ -37,3 +37,18 @@ export const StyledPickerContainer = styled.View`
   padding-right: 10px;
   border-width: 1.5px;
 `;
+
+export const StyledDatePickerContainer = styled.Pressable`
+  border-radius: 10px;
+  font-size: 18px;
+  border-color: #bdbdbdff;
+  background-color: #fff;
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-width: 1.5px;
+  flex-direction: row;
+  justify-content: space-between;
+`;

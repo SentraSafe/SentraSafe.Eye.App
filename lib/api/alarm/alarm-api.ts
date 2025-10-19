@@ -2,11 +2,10 @@ import {
   CreateAlarmRequestBody,
   GetAlarmResponse,
   GetAlarmsResponse,
-  HandleAlarmRequestBody,
   UpdateAlarmRequestBody,
 } from "./alarm-api.types";
 
-const baseUrl = "http://10.131.9.151:6971";
+const baseUrl = process.env.EXPO_PUBLIC_API_URL;
 const basePath = "/api/alarm";
 
 export const getAlarms = async (
@@ -65,18 +64,15 @@ export const submitUpdateAlarm = async (
   return [await response.json(), undefined];
 };
 
-export const submitHandleAlarm = async (
-  alarm: HandleAlarmRequestBody
-): Promise<any> => {
+export const submitRemoveAlarm = async (alarmId?: number): Promise<any> => {
   const url = new URL(basePath, baseUrl);
+  url.search = new URLSearchParams({
+    alarmId: alarmId?.toString() ?? "",
+  }).toString();
   const response = await fetch(url, {
-    body: JSON.stringify(alarm),
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    method: "DELETE",
   });
   if (!response.ok) return [undefined, "Error"];
 
-  return [await response.json(), undefined];
+  return [undefined, undefined];
 };

@@ -6,6 +6,11 @@ type Props = {
   children: ReactNode;
   onPress: (() => Promise<any>) | (() => any);
   withLoader?: boolean;
+  fontSize?: number;
+  paddingVertical?: number;
+  paddingHorizontal?: number;
+  backgroundColor?: string;
+  color?: string;
 };
 
 const FormButton: FC<Props> = ({
@@ -13,6 +18,11 @@ const FormButton: FC<Props> = ({
   children,
   onPress,
   withLoader,
+  fontSize = 20,
+  paddingVertical = 10,
+  paddingHorizontal = 20,
+  backgroundColor = "#000",
+  color = "#fff",
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -20,11 +30,14 @@ const FormButton: FC<Props> = ({
     <Pressable
       style={{
         borderRadius: 10,
-        backgroundColor: "#000",
-        paddingHorizontal: 20,
-        alignItems: "center",
-        paddingVertical: 10,
-        width: "30%",
+        backgroundColor: backgroundColor,
+        paddingHorizontal: paddingHorizontal,
+        justifyContent: "center",
+        paddingVertical: paddingVertical,
+        minWidth: "30%",
+        flexDirection: "row",
+        borderColor: "#000",
+        borderWidth: 1,
       }}
       onPress={async () => {
         setLoading(true);
@@ -33,7 +46,7 @@ const FormButton: FC<Props> = ({
       }}
       disabled={withLoader && loading}
     >
-      <Text style={{ color: "#fff", fontSize: 20 }}>
+      <Text style={{ color: color, fontSize: fontSize }}>
         {buttonText ?? children}
       </Text>
       {withLoader && loading && <ActivityIndicator />}

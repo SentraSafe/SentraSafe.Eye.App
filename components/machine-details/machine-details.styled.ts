@@ -35,7 +35,14 @@ export const AlarmContainer = styled.View`
   border-color: #bdbdbdff;
   border-width: 2px;
   border-radius: 20px;
-  height: 50px;
+  padding: 10px 20px;
+  margin-bottom: 5px;
+`;
+
+export const EventContainer = styled.View`
+  border-color: #bdbdbdff;
+  border-width: 2px;
+  border-radius: 20px;
   padding: 10px 20px;
   margin-bottom: 5px;
 `;

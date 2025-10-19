@@ -4,7 +4,7 @@ import { Container, Label, StyledPickerContainer } from "./input-group.styled";
 
 type Props = {
   setValue: (value: unknown) => void;
-  label: string;
+  label?: string;
   placeholder: string;
   values: PickerItem[];
   initialValue?: any;
@@ -26,12 +26,14 @@ const DropdownInputGroup: FC<Props> = ({
 }) => {
   return (
     <Container>
-      <Label>{label}:</Label>
+      {!!label && <Label>{label}:</Label>}
       <StyledPickerContainer>
         <Picker
-          onValueChange={(value, index) => setValue(value)}
+          onValueChange={(value, index) => {
+            setValue(value);
+          }}
           selectedValue={initialValue}
-          enabled={disabled}
+          enabled={!disabled}
         >
           <Picker.Item
             key="default"

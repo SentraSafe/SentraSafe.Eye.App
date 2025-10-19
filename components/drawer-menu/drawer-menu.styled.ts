@@ -1,13 +1,15 @@
+import { severityColor } from "@/lib/helpers/enum-helpers";
+import { SeverityEnum } from "@/lib/types/shared";
 import styled from "styled-components/native";
 
-export const DrawerMenuItem = styled.View<{ severity: "critical" | "warning" }>`
+export const DrawerMenuItem = styled.View<{ severity: SeverityEnum }>`
   border-radius: 15px;
   border-color: ${({ severity }) =>
-    severity === "critical" ? "#ff4848" : "#ffee00"};
+    severityColor(severity, "", "#ffee00", "#ff4848")};
   border-width: 1px;
   margin-top: 10px;
   background-color: ${({ severity }) =>
-    severity === "critical" ? "#ffa4a4ff" : "#fff893ff"};
+    severityColor(severity, "", "#fff893ff", "#ffa4a4ff")};
   flex-direction: row;
   align-items: center;
   justify-content: space-between;

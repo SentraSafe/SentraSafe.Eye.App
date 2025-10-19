@@ -7,19 +7,27 @@ import {
   CreateMachineProvider,
   MachineFilterProvider,
 } from "@/lib/hooks/contexts/machine-context";
+import {
+  LogFilterProvider,
+  NotificationProvider,
+} from "@/lib/hooks/contexts/notification-context";
 import { FC, ReactNode } from "react";
 
 const Providers: FC<{ children: ReactNode }> = ({ children }) => {
   return (
-    <LocationProvider>
-      <CreateMachineProvider>
-        <MachineFilterProvider>
-          <UpdateAlarmProvider>
-            <HandleAlarmProvider>{children}</HandleAlarmProvider>
-          </UpdateAlarmProvider>
-        </MachineFilterProvider>
-      </CreateMachineProvider>
-    </LocationProvider>
+    <NotificationProvider>
+      <LogFilterProvider>
+        <LocationProvider>
+          <CreateMachineProvider>
+            <MachineFilterProvider>
+              <UpdateAlarmProvider>
+                <HandleAlarmProvider>{children}</HandleAlarmProvider>
+              </UpdateAlarmProvider>
+            </MachineFilterProvider>
+          </CreateMachineProvider>
+        </LocationProvider>
+      </LogFilterProvider>
+    </NotificationProvider>
   );
 };
 

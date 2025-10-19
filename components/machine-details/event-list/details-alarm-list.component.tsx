@@ -1,10 +1,10 @@
+import FormButton from "@/components/buttons/form-button.component";
+import IconOutlined from "@/components/icons/icon-outlined.component";
 import { Alarm } from "@/lib/api/alarm/alarm-api.types";
-import { Ionicons } from "@expo/vector-icons";
 import { FC } from "react";
 import { FlatList, Text, View } from "react-native";
 import { LargeHeader } from "../../text-elements/text-elements.styled";
-import { AlarmContainer, Wrapper } from "../machine-details.styled";
-import Button from "./alarm-list-button.component";
+import { EventContainer, Wrapper } from "../machine-details.styled";
 
 type Props = {
   machineId: number;
@@ -15,40 +15,33 @@ const DetailsEventList: FC<Props> = ({ alarms, machineId }) => {
   return (
     <View
       style={{
-        margin: 20,
+        marginHorizontal: 20,
       }}
     >
-      <LargeHeader>Alarmer</LargeHeader>
+      <LargeHeader>Hændelser</LargeHeader>
+
       <FlatList
         data={alarms}
         renderItem={({ item }) => (
-          <AlarmContainer>
+          <EventContainer>
             <Wrapper>
-              <Ionicons
-                style={{ fontSize: 20 }}
-                name="warning"
+              <IconOutlined
+                icon="warning"
                 color={item.severity === 1 ? "#ffed9d" : "#f33"}
-              />
-              <Text>{item.description}</Text>
+                size={30}
+                outlineColor="#000"
+              ></IconOutlined>
+              <Text>{item.title}</Text>
             </Wrapper>
-            <Wrapper>
-              <Button
-                backgroundColor="#63c1ff"
-                href={{
-                  pathname:
-                    "/(drawer)/machines/[machineId]/alarm-details/[alarmId]",
-                  params: { machineId: machineId, alarmId: Number(item.id) },
-                }}
-                icon="information"
-              />
-              <Button
-                backgroundColor="#ffd900"
-                href={".."}
-                icon="create-outline"
-              />
-              <Button backgroundColor="red" href=".." icon="trash-bin" />
-            </Wrapper>
-          </AlarmContainer>
+            <FormButton
+              fontSize={15}
+              paddingVertical={10}
+              paddingHorizontal={0}
+              onPress={() => {}}
+            >
+              Håndter
+            </FormButton>
+          </EventContainer>
         )}
       ></FlatList>
     </View>

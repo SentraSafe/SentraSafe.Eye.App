@@ -1,4 +1,5 @@
-import { Alarm, HandleAlarm } from "@/lib/api/alarm/alarm-api.types";
+import { Alarm } from "@/lib/api/alarm/alarm-api.types";
+import { Log } from "@/lib/api/logs/logs-api.types";
 import { createContext, FC, ReactNode, useState } from "react";
 
 type AlarmToUpdateContext = {
@@ -6,9 +7,9 @@ type AlarmToUpdateContext = {
   setAlarmToUpdate: any;
 };
 
-type AlarmToHandleContext = {
-  alarmToHandle?: HandleAlarm;
-  setAlarmToHandle: any;
+type LogToHandleContext = {
+  logToHandle?: Log;
+  setLogToHandle: any;
 };
 
 const UpdateAlarmContext = createContext<AlarmToUpdateContext>(
@@ -27,25 +28,23 @@ const UpdateAlarmProvider: FC<{ children: ReactNode }> = ({ children }) => {
   );
 };
 
-const HandleAlarmContext = createContext<AlarmToHandleContext>(
-  {} as AlarmToHandleContext
+const HandleLogContext = createContext<LogToHandleContext>(
+  {} as LogToHandleContext
 );
 
-const HandleAlarmProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [alarm, setAlarm] = useState<Alarm>();
+const HandleLogProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const [log, setLog] = useState<Log>();
 
   return (
-    <HandleAlarmContext
-      value={{ alarmToHandle: alarm, setAlarmToHandle: setAlarm }}
-    >
+    <HandleLogContext value={{ logToHandle: log, setLogToHandle: setLog }}>
       {children}
-    </HandleAlarmContext>
+    </HandleLogContext>
   );
 };
 
 export {
-  HandleAlarmContext,
-  HandleAlarmProvider,
+  HandleLogContext as HandleAlarmContext,
+  HandleLogProvider as HandleAlarmProvider,
   UpdateAlarmContext,
   UpdateAlarmProvider,
 };

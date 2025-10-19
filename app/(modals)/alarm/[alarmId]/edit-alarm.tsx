@@ -4,6 +4,7 @@ import TextInputGroup from "@/components/input-group/text-input-group.component"
 import { ModalView } from "@/components/modal/modal.styled";
 import { submitUpdateAlarm } from "@/lib/api/alarm/alarm-api";
 import { CreateAlarm } from "@/lib/api/alarm/alarm-api.types";
+import { MeasurementTypes, Severities } from "@/lib/constants/shared";
 import { UpdateAlarmContext } from "@/lib/hooks/contexts/alarm-context";
 import { router } from "expo-router";
 import { FC, use, useState } from "react";
@@ -32,22 +33,43 @@ const AddAlarm: FC = () => {
         initialValue={alarmToUpdate?.description}
         disabled={submitted}
       />
-      <DropdownInputGroup
-        setValue={(value) => setAlarm({ ...alarm, severity: value as number })}
-        label={"Alvorlighed"}
-        placeholder={"Vælg en alvorlighed"}
-        values={[{ label: "Kritisk", value: 1 }]}
-        initialValue={alarmToUpdate?.severity}
-        disabled={submitted}
-      />
-      <DropdownInputGroup
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View style={{ flex: 1 }}>
+          <DropdownInputGroup
+            setValue={(value) =>
+              setAlarm({ ...alarm, severity: value as number })
+            }
+            label={"Alvorlighed"}
+            placeholder={"Vælg en alvorlighed"}
+            values={Severities.map((x) => ({ label: x.type, value: x.value }))}
+            initialValue={alarmToUpdate?.severity}
+            disabled={submitted}
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <DropdownInputGroup
+            setValue={(value) =>
+              setAlarm({ ...alarm, valueType: value as number })
+            }
+            label={"Målings type"}
+            placeholder={"Vælg en målings type"}
+            values={MeasurementTypes.map((x) => ({
+              label: x.type,
+              value: x.value,
+            }))}
+            initialValue={alarmToUpdate?.valueType}
+            disabled={submitted}
+          />
+        </View>
+      </View>
+      <TextInputGroup
         setValue={(value) =>
-          setAlarm({ ...alarm, measurementType: value as number })
+          setAlarm({ ...alarm, maximumValue: Number(value) })
         }
-        label={"Målings type"}
-        placeholder={"Vælg en målings type"}
-        values={[{ label: "Temperatur", value: 1 }]}
-        initialValue={alarmToUpdate?.measurementType}
+        inputMode="numeric"
+        label={"Maksimale værdi"}
+        placeholder={"Maksimale værdi"}
+        initialValue={alarmToUpdate?.maximumValue?.toString()}
         disabled={submitted}
       />
       <View style={{ alignItems: "center", marginTop: 20 }}>
@@ -64,7 +86,7 @@ const AddAlarm: FC = () => {
             }
           }}
         >
-          Tilføj
+          Opdater
         </FormButton>
       </View>
     </ModalView>

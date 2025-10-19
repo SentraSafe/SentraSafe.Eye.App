@@ -1,8 +1,8 @@
 import { Machine } from "@/lib/api/machine/machine-api.types";
-import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { FC } from "react";
 import { View } from "react-native";
+import IconOutlined from "../icons/icon-outlined.component";
 import { Card } from "../machine-card/card.styled";
 import {
   LargeHeader,
@@ -25,7 +25,7 @@ const CarouselItem: FC<Props> = ({ groupSize, machines, width, height }) => {
         <Link
           href={{
             pathname: "/(drawer)/machines/[machineId]",
-            params: { machineId: x.name },
+            params: { machineId: x.id },
           }}
           style={{ marginBottom: 10 }}
           key={index}
@@ -43,26 +43,22 @@ const CarouselItem: FC<Props> = ({ groupSize, machines, width, height }) => {
                     <MediumText>{x.location}</MediumText>
                   </TextWrapper>
                   <TextWrapper>
+                    <MediumTextBold>Intern lokation: </MediumTextBold>
+                    <MediumText>{x.sublocation}</MediumText>
+                  </TextWrapper>
+                  <TextWrapper>
                     <MediumTextBold>Status: </MediumTextBold>
                     <MediumText>Running</MediumText>
                   </TextWrapper>
                 </View>
               )}
             </View>
-            <View style={{ position: "relative", width: 44, height: 45 }}>
-              <Ionicons
-                name="warning-outline"
-                color="#000"
-                size={45}
-                style={{ position: "absolute", top: 0, left: 0 }}
-              />
-              <Ionicons
-                name="warning"
-                color="#ffed9d"
-                size={40}
-                style={{ position: "absolute", top: 3, left: 3 }}
-              />
-            </View>
+            <IconOutlined
+              icon="warning"
+              color="#ffed9d"
+              size={45}
+              outlineColor="#000"
+            ></IconOutlined>
           </Card>
         </Link>
       ))}

@@ -16,6 +16,10 @@ const DetailsOverview: FC<{ machine?: Machine }> = ({ machine }) => {
         <Text>{machine?.location}</Text>
       </Wrapper>
       <Wrapper>
+        <OverviewLabel>Intern lokation: </OverviewLabel>
+        <Text>{machine?.sublocation}</Text>
+      </Wrapper>
+      <Wrapper>
         <OverviewLabel>Status: </OverviewLabel>
         <Ionicons name="play-circle-outline" style={{ color: "#0f1" }} />
         <Text> Running</Text>
