@@ -142,7 +142,7 @@ const LogsOverview: FC = () => {
                       setAlarmToHandle(item);
                       router.push({
                         pathname: "/(modals)/logs/[logId]/handle-log",
-                        params: { alarmId: item.alarmId },
+                        params: { logId: item.id },
                       });
                     }}
                   >

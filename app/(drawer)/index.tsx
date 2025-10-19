@@ -1,5 +1,4 @@
 ﻿import FloatingButton from "@/components/buttons/add-button.component";
-import FormButton from "@/components/buttons/form-button.component";
 import { Container } from "@/components/containers/containers.styled";
 import FilterViewButton from "@/components/filter-elements/filter-view-button.component";
 import CarouselItem from "@/components/machine-carousel/carousel-item.component";
@@ -37,25 +36,25 @@ export default function Index() {
 
   const [groupSize, setGroupSize] = useState(1);
 
-  useFocusEffect(
-    useCallback(() => {
-      const getData = async () => {
-        setLoading(true);
-        const [machinesResponse, locationsResponse] = await Promise.all([
-          getMachines(machineFilter),
-          getLocations(),
-        ]);
+  const callback = useCallback(() => {
+    const getData = async () => {
+      setLoading(true);
+      const [machinesResponse, locationsResponse] = await Promise.all([
+        getMachines(machineFilter),
+        getLocations(),
+      ]);
 
-        const [machineData] = machinesResponse;
-        const [locationData] = locationsResponse;
+      const [machineData] = machinesResponse;
+      const [locationData] = locationsResponse;
 
-        setMachines(machineData ?? []);
-        setLocations(locationData);
-        setLoading(false);
-      };
-      getData();
-    }, [machineFilter, setLocations])
-  );
+      setMachines(machineData ?? []);
+      setLocations(locationData);
+      setLoading(false);
+    };
+    getData();
+  }, [machineFilter, setLocations]);
+
+  useFocusEffect(callback);
 
   const arrangedMachines = useMemo(() => {
     const arrangedMachines: Machine[][] = [];
@@ -101,8 +100,9 @@ export default function Index() {
 
   return (
     <GestureHandlerRootView>
-      <Container style={{ marginLeft: 10, marginRight: 10, height: "100%" }}>
-        <LargeHeader style={{ marginBottom: 20 }}>Oversigt</LargeHeader>
+      <Container
+        style={{ marginHorizontal: 10, marginTop: 20, height: "100%" }}
+      >
         <View
           style={{
             flexDirection: "row",
@@ -111,13 +111,7 @@ export default function Index() {
             alignItems: "center",
           }}
         >
-          <FormButton
-            paddingHorizontal={30}
-            paddingVertical={10}
-            onPress={() => router.push("/(modals)/machine/machine-filter")}
-          >
-            Filtre
-          </FormButton>
+          <LargeHeader style={{ marginBottom: 20 }}>Oversigt</LargeHeader>
           <View
             style={{
               flexDirection: "row",
@@ -169,7 +163,21 @@ export default function Index() {
           ></Carousel>
         )}
       </Container>
+      <FloatingButton
+        icon="refresh"
+        align="left"
+        backgroundColor="#fff"
+        color="#000"
+        onPress={callback}
+      />
       <FloatingButton icon="add" href="/(modals)/machine/add-machine" />
+      <FloatingButton
+        icon="filter"
+        align="right"
+        backgroundColor="#fff"
+        color="#000"
+        onPress={() => router.push("/(modals)/machine/machine-filter")}
+      />
     </GestureHandlerRootView>
   );
 }

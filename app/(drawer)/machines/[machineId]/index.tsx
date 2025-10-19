@@ -55,16 +55,19 @@ const MachineDetailsPage: FC = () => {
           params: { machineId: machineId as string },
         }}
       />
-      <FloatingButton icon="refresh" onPress={callback} />
       <FloatingButton
         icon="newspaper"
-        backgroundColor="#fff"
-        color="#000"
-        align="right"
         href={{
           pathname: "/(drawer)/machines/[machineId]/logs-overview",
           params: { machineId: machineId as string },
         }}
+      />
+      <FloatingButton
+        icon="refresh"
+        backgroundColor="#fff"
+        color="#000"
+        align="right"
+        onPress={callback}
       />
     </View>
   );

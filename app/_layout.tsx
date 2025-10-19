@@ -1,10 +1,13 @@
 import Providers from "@/components/providers/provider.component";
+import { AuthenticationContext } from "@/lib/hooks/authenitcation/authentication";
 import { Stack } from "expo-router";
+import { FC, use } from "react";
 
-export default function RootLayout() {
+const Layout: FC = () => {
+  const { accessToken } = use(AuthenticationContext);
   return (
-    <Providers>
-      <Stack screenOptions={{ headerShown: false }}>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Protected guard={!!accessToken}>
         <Stack.Screen name="(drawer)" />
         <Stack.Screen
           name="(modals)"
@@ -14,7 +17,16 @@ export default function RootLayout() {
             contentStyle: { backgroundColor: "transparent" },
           }}
         />
-      </Stack>
+      </Stack.Protected>
+      <Stack.Screen name="login" />
+    </Stack>
+  );
+};
+
+export default function RootLayout() {
+  return (
+    <Providers>
+      <Layout></Layout>
     </Providers>
   );
 }

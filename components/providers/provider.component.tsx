@@ -1,3 +1,4 @@
+import { AuthenticationProvider } from "@/lib/hooks/authenitcation/authentication";
 import {
   HandleAlarmProvider,
   UpdateAlarmProvider,
@@ -15,19 +16,21 @@ import { FC, ReactNode } from "react";
 
 const Providers: FC<{ children: ReactNode }> = ({ children }) => {
   return (
-    <NotificationProvider>
-      <LogFilterProvider>
-        <LocationProvider>
-          <CreateMachineProvider>
-            <MachineFilterProvider>
-              <UpdateAlarmProvider>
-                <HandleAlarmProvider>{children}</HandleAlarmProvider>
-              </UpdateAlarmProvider>
-            </MachineFilterProvider>
-          </CreateMachineProvider>
-        </LocationProvider>
-      </LogFilterProvider>
-    </NotificationProvider>
+    <AuthenticationProvider>
+      <NotificationProvider>
+        <LogFilterProvider>
+          <LocationProvider>
+            <CreateMachineProvider>
+              <MachineFilterProvider>
+                <UpdateAlarmProvider>
+                  <HandleAlarmProvider>{children}</HandleAlarmProvider>
+                </UpdateAlarmProvider>
+              </MachineFilterProvider>
+            </CreateMachineProvider>
+          </LocationProvider>
+        </LogFilterProvider>
+      </NotificationProvider>
+    </AuthenticationProvider>
   );
 };
 
