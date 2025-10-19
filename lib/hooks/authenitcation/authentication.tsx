@@ -31,7 +31,7 @@ const clientId = "cf989fd8-a2c2-418f-963a-c0b4c7735e49";
 
 const AuthenticationProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const discovery = AuthSession.useAutoDiscovery(issuer);
-  const [request, response, promptAsync] = AuthSession.useAuthRequest(
+  const [request, , promptAsync] = AuthSession.useAuthRequest(
     {
       clientId: clientId,
       redirectUri: redirectUri,
@@ -42,38 +42,38 @@ const AuthenticationProvider: FC<{ children: ReactNode }> = ({ children }) => {
     discovery
   );
 
+  const discoveryRef = useRef<AuthSession.DiscoveryDocument>(null);
   const requestRef = useRef<AuthSession.AuthRequest>(null);
-  const responseRef = useRef<AuthSession.AuthSessionResult>(null);
   const promptRef =
     useRef<
       (
         options?: AuthSession.AuthRequestPromptOptions
       ) => Promise<AuthSession.AuthSessionResult>
-    >(null);
+    >(promptAsync);
 
   const resolveReadyRef = useRef<() => void>(null);
 
   useEffect(() => {
+    discoveryRef.current = discovery;
     requestRef.current = request;
-    responseRef.current = response;
     promptRef.current = promptAsync;
     if (requestRef.current && resolveReadyRef.current)
       resolveReadyRef.current();
-  }, [promptAsync, request, response]);
+  }, [discovery, promptAsync, request]);
 
   const [accessToken, setAccessToken] = useState("");
   const [idToken, setIdToken] = useState("");
 
   const authenticate = async () => {
-    if (!requestRef.current || !responseRef.current) {
+    if (!requestRef.current || !discoveryRef.current) {
       await new Promise<void>((resolve) => {
         resolveReadyRef.current = resolve;
       });
     }
 
-    if (promptRef.current && requestRef.current) await promptRef.current();
-    if (responseRef.current?.type === "success") {
-      const { code } = responseRef.current.params;
+    const response = await promptRef.current();
+    if (response.type === "success") {
+      const { code } = response.params;
 
       const tokenResponse = await AuthSession.exchangeCodeAsync(
         {
@@ -86,7 +86,7 @@ const AuthenticationProvider: FC<{ children: ReactNode }> = ({ children }) => {
             code_verifier: requestRef.current?.codeVerifier ?? "",
           },
         },
-        discovery!
+        discoveryRef.current!
       );
 
       console.log("accessToken", jwtDecode(tokenResponse.accessToken));
@@ -98,7 +98,7 @@ const AuthenticationProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
       const userInfo = await AuthSession.fetchUserInfoAsync(
         tokenResponse,
-        discovery!
+        discoveryRef.current!
       );
 
       console.log("userInfo", userInfo);

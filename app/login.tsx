@@ -15,7 +15,6 @@ const LoginScreen: FC = () => {
     hasRun.current = true;
 
     const init = async () => {
-      console.log("asdasd");
       await authenticate();
       router.dismissTo("/(drawer)");
     };
