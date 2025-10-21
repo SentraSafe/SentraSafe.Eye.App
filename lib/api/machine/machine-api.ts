@@ -14,7 +14,7 @@ export const getMachines = async (
   const url = new URL("/api/machine", baseUrl);
   const searchParams = new URLSearchParams({
     name: requestParams?.name ?? "",
-    machineType: requestParams?.machineType?.toString() ?? "",
+    type: requestParams?.type?.toString() ?? "",
     locationId: requestParams?.locationId?.toString() ?? "",
     subocationId: requestParams?.sublocationId?.toString() ?? "",
   });

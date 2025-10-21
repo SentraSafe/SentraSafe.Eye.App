@@ -15,6 +15,7 @@ import {
   MediumTextBold,
 } from "../text-elements/text-elements.styled";
 import { TextWrapper, Wrapper } from "./carousel.styled";
+import {MachineType} from "@/lib/constants/shared";
 
 type Props = {
   groupSize: number;
@@ -82,6 +83,10 @@ const CarouselItem: FC<Props> = ({ groupSize, machines, width, height }) => {
                     <MediumTextBold>Intern lokation: </MediumTextBold>
                     <MediumText>{x.sublocation}</MediumText>
                   </TextWrapper>
+                    <TextWrapper>
+                    <MediumTextBold>Maskine type: </MediumTextBold>
+                    <MediumText>{MachineType.find(y => y.value == x.type)?.value}</MediumText>
+                    </TextWrapper>
                   <TextWrapper>
                     <MediumTextBold>Status: </MediumTextBold>
                     <Ionicons

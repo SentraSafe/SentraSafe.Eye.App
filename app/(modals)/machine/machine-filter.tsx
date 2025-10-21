@@ -56,7 +56,7 @@ const MachineFilterModal: FC = () => {
       />
       <DropdownInputGroup
         setValue={(value) =>
-          setFilter({ ...filter, machineType: value as number })
+          setFilter({ ...filter, type: value as number })
         }
         label={"Maskine type"}
         placeholder={"Vælg en maskine type"}
@@ -64,7 +64,7 @@ const MachineFilterModal: FC = () => {
           { label: "Server", value: 0 },
           { label: "Other", value: 1 },
         ]}
-        initialValue={machineFilter.machineType}
+        initialValue={machineFilter.type}
       />
       <View style={{ alignItems: "center", justifyContent: "center" }}>
         <FormButton

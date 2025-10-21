@@ -55,9 +55,7 @@ const AddMachine: FC = () => {
         disabled={submitted}
       />
       <DropdownInputGroup
-        setValue={(value) =>
-          setMachine({ ...machine, machineType: value as number })
-        }
+        setValue={(value) => setMachine({ ...machine, type: value as number })}
         label={"Maskine type"}
         placeholder={"Vælg en maskine type"}
         values={MachineType.map((x) => ({ label: x.type, value: x.value }))}

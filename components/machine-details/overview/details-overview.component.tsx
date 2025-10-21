@@ -6,6 +6,7 @@ import { Machine } from "@/lib/api/machine/machine-api.types";
 import { Ionicons } from "@expo/vector-icons";
 import { FC } from "react";
 import { Overview, Wrapper } from "../machine-details.styled";
+import {MachineType} from "@/lib/constants/shared";
 
 const DetailsOverview: FC<{ machine?: Machine }> = ({ machine }) => {
   return (
@@ -22,6 +23,10 @@ const DetailsOverview: FC<{ machine?: Machine }> = ({ machine }) => {
         <MediumTextBold>Intern lokation: </MediumTextBold>
         <MediumText>{machine?.sublocation}</MediumText>
       </Wrapper>
+        <Wrapper>
+            <MediumTextBold>Maskine type: </MediumTextBold>
+            <MediumText>{MachineType.find(x => x.value == machine?.type)?.value}</MediumText>
+        </Wrapper>
       <Wrapper>
         <MediumTextBold>Status: </MediumTextBold>
         <Ionicons

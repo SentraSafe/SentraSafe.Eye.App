@@ -8,7 +8,7 @@ export type SubmitCreateMachineRequestBody = CreateMachine;
 export type Machine = {
   id: number;
   name: string;
-  machineType: number;
+  type: number;
   location: string;
   sublocation: string;
   status: string;
@@ -16,14 +16,14 @@ export type Machine = {
 
 export type MachineFilter = {
   name?: string;
-  machineType?: number;
+  type?: number;
   locationId?: number;
   sublocationId?: number;
 };
 
 export type CreateMachine = {
   name?: string;
-  machineType?: number;
+  type?: number;
   locationId?: number;
   sublocationId?: number;
 };
