@@ -5,8 +5,9 @@ import { ModalView } from "@/components/modal/modal.styled";
 import { submitCreateAlarm } from "@/lib/api/alarm/alarm-api";
 import { CreateAlarm } from "@/lib/api/alarm/alarm-api.types";
 import { MeasurementTypes, Severities } from "@/lib/constants/shared";
+import { AuthenticationContext } from "@/lib/hooks/authenitcation/authentication";
 import { router, useLocalSearchParams } from "expo-router";
-import { FC, useState } from "react";
+import { FC, use, useState } from "react";
 import { View } from "react-native";
 
 const AddAlarm: FC = () => {
@@ -15,6 +16,7 @@ const AddAlarm: FC = () => {
     machineId: Number(machineId),
   });
   const [submitted, setSubmitted] = useState(false);
+  const { accessToken } = use(AuthenticationContext);
 
   return (
     <ModalView>
@@ -73,7 +75,7 @@ const AddAlarm: FC = () => {
           withLoader={true}
           onPress={async () => {
             setSubmitted(true);
-            const [, error] = await submitCreateAlarm(alarm);
+            const [, error] = await submitCreateAlarm(alarm, accessToken);
             setSubmitted(false);
 
             if (!error) router.dismiss();

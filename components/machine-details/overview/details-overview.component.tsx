@@ -1,28 +1,37 @@
+import {
+  MediumText,
+  MediumTextBold,
+} from "@/components/text-elements/text-elements.styled";
 import { Machine } from "@/lib/api/machine/machine-api.types";
 import { Ionicons } from "@expo/vector-icons";
 import { FC } from "react";
-import { Text } from "react-native";
-import { Overview, OverviewLabel, Wrapper } from "../machine-details.styled";
+import { Overview, Wrapper } from "../machine-details.styled";
 
 const DetailsOverview: FC<{ machine?: Machine }> = ({ machine }) => {
   return (
     <Overview>
       <Wrapper>
-        <OverviewLabel>Navn: </OverviewLabel>
-        <Text>{machine?.name}</Text>
+        <MediumTextBold>Navn: </MediumTextBold>
+        <MediumText>{machine?.name}</MediumText>
       </Wrapper>
       <Wrapper>
-        <OverviewLabel>Lokation: </OverviewLabel>
-        <Text>{machine?.location}</Text>
+        <MediumTextBold>Lokation: </MediumTextBold>
+        <MediumText>{machine?.location}</MediumText>
       </Wrapper>
       <Wrapper>
-        <OverviewLabel>Intern lokation: </OverviewLabel>
-        <Text>{machine?.sublocation}</Text>
+        <MediumTextBold>Intern lokation: </MediumTextBold>
+        <MediumText>{machine?.sublocation}</MediumText>
       </Wrapper>
       <Wrapper>
-        <OverviewLabel>Status: </OverviewLabel>
-        <Ionicons name="play-circle-outline" style={{ color: "#0f1" }} />
-        <Text> Running</Text>
+        <MediumTextBold>Status: </MediumTextBold>
+        <Ionicons
+          name="play-circle-outline"
+          style={{
+            color: machine?.status === "Healthy" ? "#0f1" : "#ff0000",
+            alignSelf: "center",
+          }}
+        />
+        <MediumText>{machine?.status}</MediumText>
       </Wrapper>
     </Overview>
   );

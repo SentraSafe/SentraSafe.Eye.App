@@ -30,7 +30,14 @@ const LoginScreen: FC = () => {
       <Text style={{ marginBottom: 10 }}>
         Hvis der ikke sker noget, så tryk på knappen.
       </Text>
-      <FormButton onPress={() => callback()}>Login</FormButton>
+      <FormButton
+        onPress={() => {
+          hasRun.current = false;
+          callback();
+        }}
+      >
+        Login
+      </FormButton>
     </View>
   );
 };

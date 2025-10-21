@@ -6,6 +6,7 @@ import { LargeHeader } from "@/components/text-elements/text-elements.styled";
 import { getLocations } from "@/lib/api/location/location-api";
 import { getMachines } from "@/lib/api/machine/machine-api";
 import { Machine } from "@/lib/api/machine/machine-api.types";
+import { AuthenticationContext } from "@/lib/hooks/authenitcation/authentication";
 import { LocationContext } from "@/lib/hooks/contexts/location-context";
 import { MachineFilterContext } from "@/lib/hooks/contexts/machine-context";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -27,6 +28,7 @@ import Carousel, {
 
 export default function Index() {
   const windowDimensions = Dimensions.get("window");
+  const { accessToken } = use(AuthenticationContext);
 
   const [machines, setMachines] = useState<Machine[]>([]);
   const [loading, setLoading] = useState(false);
@@ -40,8 +42,8 @@ export default function Index() {
     const getData = async () => {
       setLoading(true);
       const [machinesResponse, locationsResponse] = await Promise.all([
-        getMachines(machineFilter),
-        getLocations(),
+        getMachines(machineFilter, accessToken),
+        getLocations(accessToken),
       ]);
 
       const [machineData] = machinesResponse;
@@ -49,10 +51,11 @@ export default function Index() {
 
       setMachines(machineData ?? []);
       setLocations(locationData);
+
       setLoading(false);
     };
     getData();
-  }, [machineFilter, setLocations]);
+  }, [accessToken, machineFilter, setLocations]);
 
   useFocusEffect(callback);
 
@@ -135,12 +138,15 @@ export default function Index() {
         </View>
 
         {loading ? (
-          <ActivityIndicator />
+          <ActivityIndicator
+            size={"large"}
+            style={{ height: 30, width: 30, alignSelf: "center" }}
+          />
         ) : (
           <Carousel
             ref={carousel}
             data={arrangedMachines}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <CarouselItem
                 width={carouselItemWidth}
                 height={carouselItemHeight}
@@ -151,7 +157,7 @@ export default function Index() {
             width={carouselItemWidth}
             loop={false}
             height={carouselItemHeight}
-            snapEnabled={false}
+            snapEnabled={true}
             pagingEnabled={true}
             style={{ width: windowDimensions.width }}
             mode="parallax"

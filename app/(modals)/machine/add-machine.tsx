@@ -4,6 +4,8 @@ import TextInputGroup from "@/components/input-group/text-input-group.component"
 import { ModalView } from "@/components/modal/modal.styled";
 import { submitCreateMachine } from "@/lib/api/machine/machine-api";
 import { CreateMachine } from "@/lib/api/machine/machine-api.types";
+import { MachineType } from "@/lib/constants/shared";
+import { AuthenticationContext } from "@/lib/hooks/authenitcation/authentication";
 import { LocationContext } from "@/lib/hooks/contexts/location-context";
 import { router } from "expo-router";
 import { FC, use, useMemo, useState } from "react";
@@ -11,6 +13,8 @@ import { View } from "react-native";
 
 const AddMachine: FC = () => {
   const { locations } = use(LocationContext);
+  const { accessToken } = use(AuthenticationContext);
+
   const [machine, setMachine] = useState<CreateMachine>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -56,10 +60,7 @@ const AddMachine: FC = () => {
         }
         label={"Maskine type"}
         placeholder={"Vælg en maskine type"}
-        values={[
-          { label: "Server", value: 0 },
-          { label: "Other", value: 1 },
-        ]}
+        values={MachineType.map((x) => ({ label: x.type, value: x.value }))}
         disabled={submitted}
       />
       <View style={{ alignItems: "center", marginTop: 20 }}>
@@ -67,7 +68,7 @@ const AddMachine: FC = () => {
           withLoader={true}
           onPress={async () => {
             setSubmitted(true);
-            const [, error] = await submitCreateMachine(machine);
+            const [, error] = await submitCreateMachine(machine, accessToken);
             setSubmitted(false);
 
             if (!error) router.dismiss();

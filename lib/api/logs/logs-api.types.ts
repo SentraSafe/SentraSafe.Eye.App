@@ -8,16 +8,16 @@ export type SubmitHandleLogResponse = ApiResponse<undefined, string>;
 
 export type Log = {
   id: number;
-  description?: string;
-  timeStamp: Date;
-  severity: SeverityEnum;
   machineId: number;
-  alarmId: number;
-  value?: string;
-  isHandled: boolean;
+  severity: SeverityEnum;
+  timeCreated: Date;
+  source: string;
+  message: string;
+  alarmId?: number;
   handledBy?: string;
-  handleTime?: Date;
-  handleDescription?: string;
+  handledAt?: string;
+  handledFeedback?: string;
+  isHandled?: boolean;
 };
 
 export type LogFilter = {
@@ -27,12 +27,12 @@ export type LogFilter = {
   severity?: SeverityEnum;
   isHandled?: boolean;
   handledBy?: string;
-  handleTimeFrom?: Date;
-  handleTimeTo?: Date;
+  handledFrom?: Date;
+  handledTo?: Date;
 };
 
 export type HandledLog = {
   id: number;
   handledBy: string;
-  handleDescription: string;
+  HandledFeedback: string;
 };

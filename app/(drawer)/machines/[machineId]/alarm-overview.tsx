@@ -13,6 +13,7 @@ import { getAlarms, submitRemoveAlarm } from "@/lib/api/alarm/alarm-api";
 import { Alarm } from "@/lib/api/alarm/alarm-api.types";
 import { MeasurementTypes } from "@/lib/constants/shared";
 import { severityColor } from "@/lib/helpers/enum-helpers";
+import { AuthenticationContext } from "@/lib/hooks/authenitcation/authentication";
 import { UpdateAlarmContext } from "@/lib/hooks/contexts/alarm-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
@@ -22,18 +23,20 @@ import { FlatList, Text, View } from "react-native";
 const AlarmOverviewModal: FC = () => {
   const { machineId } = useLocalSearchParams();
   const { setAlarmToUpdate } = use(UpdateAlarmContext);
+  const { accessToken } = use(AuthenticationContext);
+
   const [alarms, setAlarms] = useState<Alarm[]>();
   const [selectedItem, setSelectedItem] = useState<Alarm>();
 
   const callback = useCallback(() => {
     const init = async () => {
-      const [alarmsResponse] = await getAlarms(Number(machineId));
+      const [alarmsResponse] = await getAlarms(Number(machineId), accessToken);
 
       setAlarms(alarmsResponse);
     };
 
     init();
-  }, [machineId]);
+  }, [accessToken, machineId]);
 
   useFocusEffect(callback);
 
@@ -65,7 +68,7 @@ const AlarmOverviewModal: FC = () => {
                   <MediumTextBold>Målingstype: </MediumTextBold>
                   <Text>
                     {
-                      MeasurementTypes.find((x) => x.value == item.valueType)
+                      MeasurementTypes.find((x) => x.value === item.valueType)
                         ?.type
                     }
                   </Text>
@@ -109,7 +112,11 @@ const AlarmOverviewModal: FC = () => {
               <Button
                 backgroundColor="red"
                 onPress={async () => {
-                  const [, error] = await submitRemoveAlarm(item.id);
+                  if (!item.id) return;
+                  const [, error] = await submitRemoveAlarm(
+                    item.id,
+                    accessToken
+                  );
 
                   if (!error) callback();
                 }}

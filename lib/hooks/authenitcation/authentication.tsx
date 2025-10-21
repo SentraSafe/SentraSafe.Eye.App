@@ -1,6 +1,5 @@
 import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
-import { jwtDecode } from "jwt-decode";
 import {
   createContext,
   FC,
@@ -23,7 +22,7 @@ const AuthenticationContext = createContext<AuthenticationStore>(
 WebBrowser.maybeCompleteAuthSession();
 
 const redirectUri = AuthSession.makeRedirectUri({
-  scheme: "EyeApp://redirect",
+  scheme: "eye-app://redirect",
 });
 const issuer =
   "https://login.microsoftonline.com/2dfd1f89-3b0a-454b-9ec5-778b2f3140d5/v2.0";
@@ -35,7 +34,7 @@ const AuthenticationProvider: FC<{ children: ReactNode }> = ({ children }) => {
     {
       clientId: clientId,
       redirectUri: redirectUri,
-      scopes: ["openid"],
+      scopes: [`openid`],
       extraParams: {},
       usePKCE: true,
     },
@@ -80,7 +79,7 @@ const AuthenticationProvider: FC<{ children: ReactNode }> = ({ children }) => {
           code: code,
           clientId: clientId,
           redirectUri: redirectUri,
-          scopes: ["openid", "profile"],
+          scopes: [`openid`, `api://${clientId}/.default`],
 
           extraParams: {
             code_verifier: requestRef.current?.codeVerifier ?? "",
@@ -89,19 +88,10 @@ const AuthenticationProvider: FC<{ children: ReactNode }> = ({ children }) => {
         discoveryRef.current!
       );
 
-      console.log("accessToken", jwtDecode(tokenResponse.accessToken));
       setAccessToken(tokenResponse.accessToken);
       if (tokenResponse.idToken) {
-        console.log("idToken", jwtDecode(tokenResponse.idToken));
         setIdToken(tokenResponse.idToken);
       }
-
-      const userInfo = await AuthSession.fetchUserInfoAsync(
-        tokenResponse,
-        discoveryRef.current!
-      );
-
-      console.log("userInfo", userInfo);
     }
   };
 

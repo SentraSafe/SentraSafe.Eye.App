@@ -18,9 +18,13 @@ const MeasurementOverview: FC<Props> = ({ measurements }) => {
       }}
     >
       {measurements?.map((measurement, index) => (
-        <MeasurementContainer key={index}>
+        <MeasurementContainer key={measurement.measurementType}>
           <OverviewLabel>
-            {MeasurementTypes.find((x) => x.value == measurement.value)?.type}
+            {
+              MeasurementTypes.find(
+                (x) => x.value === measurement.measurementType
+              )?.type
+            }
           </OverviewLabel>
           <Text>{measurement.value}</Text>
         </MeasurementContainer>

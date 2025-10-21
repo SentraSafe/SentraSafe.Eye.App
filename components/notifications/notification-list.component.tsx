@@ -3,7 +3,7 @@ import { NotificationContext } from "@/lib/hooks/contexts/notification-context";
 import useSignalR from "@/lib/hooks/signalr-clients/signalr-client-hook";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { FC, use, useEffect } from "react";
+import { FC, use, useEffect, useRef } from "react";
 import { Text, View } from "react-native";
 import {
   DrawerMenuItem,
@@ -14,23 +14,30 @@ import {
 const NotificationList: FC = () => {
   const { subscribe } = useSignalR<Log[]>("AlarmHub");
   const { notifications, setNotifications } = use(NotificationContext);
+  const isSubscribed = useRef(false);
 
   useEffect(() => {
+    if (isSubscribed.current) return;
+
     const init = async () => {
       const logs = await subscribe(
-        "SubscribeToAlarms",
-        [],
-        "notification",
+        "SubscribeToNotifications",
+        null,
+        "notifications",
         (payload) => {
-          console.log("notifications", payload);
-          setNotifications([...notifications, payload]);
+          setNotifications((prev: Log[]) => {
+            if (!prev) return [...payload];
+
+            return [...payload, ...prev];
+          });
         }
       );
       setNotifications(logs);
+      isSubscribed.current = true;
     };
 
     init();
-  }, []);
+  }, [setNotifications, subscribe]);
 
   return (
     <View>
@@ -56,8 +63,8 @@ const NotificationList: FC = () => {
               />
             </MenuItemButton>
             <View>
-              <Text>{notification.timeStamp.toLocaleString()}</Text>
-              <Text ellipsizeMode="tail">{notification.description}</Text>
+              <Text>{notification.timeCreated.toLocaleString()}</Text>
+              <Text ellipsizeMode="tail">{notification.source}</Text>
             </View>
           </MenuItemButtonWrapper>
           <Link

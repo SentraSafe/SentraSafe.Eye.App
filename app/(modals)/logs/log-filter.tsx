@@ -43,15 +43,15 @@ const AddAlarm: FC = () => {
         <DatePickerInputGroup
           label="Tidsstempel fra"
           placeholder="Vælg et tidspunkt"
-          initialValue={logFilter.handleTimeFrom}
-          setValue={(date) => setFilter({ ...filter, handleTimeFrom: date })}
+          initialValue={logFilter.handledFrom}
+          setValue={(date) => setFilter({ ...filter, handledFrom: date })}
         />
 
         <DatePickerInputGroup
           label="Tidsstempel til"
           placeholder="Vælg et tidspunkt"
-          initialValue={logFilter.handleTimeTo}
-          setValue={(date) => setFilter({ ...filter, handleTimeTo: date })}
+          initialValue={logFilter.handledTo}
+          setValue={(date) => setFilter({ ...filter, handledTo: date })}
         />
 
         <DropdownInputGroup

@@ -11,6 +11,7 @@ export type Machine = {
   machineType: number;
   location: string;
   sublocation: string;
+  status: string;
 };
 
 export type MachineFilter = {

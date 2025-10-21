@@ -5,65 +5,70 @@ import {
   HubConnectionState,
   LogLevel,
 } from "@microsoft/signalr";
-import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef } from "react";
 
 function useSignalR<T>(path: string): SignalRClient<T> {
   const connectionRef = useRef<HubConnection>(null);
   const connectPromise = useRef<Promise<void>>(null);
 
-  const disconnect = () => {
-    console.log("stopping");
-    connectionRef.current?.stop();
-  };
-
   useEffect(() => {
     const connection = new HubConnectionBuilder()
       .withUrl(new URL(path, process.env.EXPO_PUBLIC_API_URL!).toString())
-      .configureLogging(LogLevel.Debug)
+      .configureLogging(LogLevel.Error)
+      .withServerTimeout(120000)
       .withAutomaticReconnect()
       .build();
     connectionRef.current = connection;
+    connectPromise.current = null;
 
-    const connect = async () => {
-      try {
-        await connection.start();
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    console.log("connecting");
-
-    if (!connectPromise.current) connectPromise.current = connect();
-
-    return disconnect;
+    connection.onclose(() => (connectPromise.current = null));
   }, [path]);
-
-  useFocusEffect(useCallback(() => disconnect, []));
 
   const ensureConnected = useCallback(async () => {
     if (connectionRef.current?.state === HubConnectionState.Connected) return;
 
     if (connectionRef.current?.state === HubConnectionState.Disconnected) {
-      await connectionRef.current.start();
+      if (!connectPromise.current)
+        connectPromise.current = connectionRef.current.start();
+
+      await connectPromise.current;
       return;
     }
 
     await new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(
-        () => reject(new Error("Connection timeout")),
-        15000
-      );
-      const cleanUp = () => {
+      let settled = false;
+      const settle = (cleanup?: () => void) => {
+        if (settled) return;
+        settled = true;
         clearTimeout(timeout);
-        resolve();
+        cleanup?.();
       };
-      if (connectionRef.current?.state === HubConnectionState.Connecting)
-        connectPromise.current?.then(() => cleanUp());
-      else if (connectionRef.current?.state === HubConnectionState.Reconnecting)
-        connectionRef.current?.onreconnected(cleanUp);
-      else cleanUp();
+
+      const timeout = setTimeout(() => {
+        settle();
+        reject(new Error("Connection timeout"));
+      }, 15000);
+
+      const onReconnected = () => settle(() => resolve());
+      const onClose = (err?: Error) => {
+        settle();
+        reject(err ?? new Error("Connection closed"));
+      };
+
+      connectionRef.current?.onreconnected(onReconnected);
+      connectionRef.current?.onclose(onClose);
+
+      if (
+        connectionRef.current?.state === HubConnectionState.Connecting &&
+        connectPromise.current
+      ) {
+        connectPromise.current
+          .then(() => settle(() => resolve()))
+          .catch((error) => {
+            settle();
+            reject(error);
+          });
+      }
     });
   }, [connectPromise]);
 
@@ -74,15 +79,15 @@ function useSignalR<T>(path: string): SignalRClient<T> {
       callbackName: string,
       callback: (...payload: any[]) => void
     ): Promise<T | void> => {
-      await ensureConnected();
       const client = connectionRef.current!;
+      client.on(callbackName, callback);
+      await ensureConnected();
 
       let response;
-      if (group && subscriptionEndpoint) {
+      if (subscriptionEndpoint && group) {
         response = client.invoke(subscriptionEndpoint, group);
-      }
-
-      client.on(callbackName, callback);
+      } else if (subscriptionEndpoint)
+        response = client.invoke(subscriptionEndpoint);
 
       return response;
     },
@@ -93,13 +98,14 @@ function useSignalR<T>(path: string): SignalRClient<T> {
     async (
       subscriptionEndpoint: string | null,
       group: string | number | null,
-      callbackName: string
+      callbackName: string | null
     ): Promise<void> => {
       await ensureConnected();
       const client = connectionRef.current!;
       if (group && subscriptionEndpoint)
         client.invoke(subscriptionEndpoint, group);
-      client.off(callbackName);
+
+      if (callbackName) client.off(callbackName);
     },
     [ensureConnected]
   );

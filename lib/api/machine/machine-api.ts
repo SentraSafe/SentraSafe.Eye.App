@@ -8,28 +8,40 @@ import {
 const baseUrl = process.env.EXPO_PUBLIC_API_URL;
 
 export const getMachines = async (
-  requestParams?: GetMachinesRequestParams
+  requestParams: GetMachinesRequestParams | null,
+  accessToken: string
 ): Promise<GetMachinesResponse> => {
   const url = new URL("/api/machine", baseUrl);
   const searchParams = new URLSearchParams({
     name: requestParams?.name ?? "",
     machineType: requestParams?.machineType?.toString() ?? "",
-    location: requestParams?.locationId?.toString() ?? "",
-    subLocation: requestParams?.sublocationId?.toString() ?? "",
+    locationId: requestParams?.locationId?.toString() ?? "",
+    subocationId: requestParams?.sublocationId?.toString() ?? "",
   });
   url.search = searchParams.toString();
-  const response = await fetch(url, { method: "GET" });
+  const response = await fetch(url, {
+    method: "GET",
+    headers: new Headers({
+      Authorization: `Bearer ${accessToken}`,
+    }),
+  });
 
   if (!response.ok) return [undefined, "Error"];
 
   return [await response.json(), undefined];
 };
 
-export const getMachine = async (id: number): Promise<GetMachineResponse> => {
+export const getMachine = async (
+  id: number,
+  accessToken: string
+): Promise<GetMachineResponse> => {
   const url = new URL(`/api/machine/${id}`, baseUrl);
-  const response = await fetch(url, { method: "GET" });
-
-  console.log(response);
+  const response = await fetch(url, {
+    method: "GET",
+    headers: new Headers({
+      Authorization: `Bearer ${accessToken}`,
+    }),
+  });
 
   if (!response.ok) return [undefined, "Error"];
 
@@ -37,7 +49,8 @@ export const getMachine = async (id: number): Promise<GetMachineResponse> => {
 };
 
 export const submitCreateMachine = async (
-  machine: SubmitCreateMachineRequestBody
+  machine: SubmitCreateMachineRequestBody,
+  accessToken: string
 ): Promise<GetMachineResponse> => {
   const url = new URL("/api/machine/", baseUrl);
   const response = await fetch(url, {
@@ -45,6 +58,7 @@ export const submitCreateMachine = async (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 

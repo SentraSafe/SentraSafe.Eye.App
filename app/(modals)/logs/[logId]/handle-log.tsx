@@ -3,6 +3,7 @@ import TextInputGroup from "@/components/input-group/text-input-group.component"
 import { ModalView } from "@/components/modal/modal.styled";
 import { submitHandleLog } from "@/lib/api/logs/logs-api";
 import { HandledLog } from "@/lib/api/logs/logs-api.types";
+import { AuthenticationContext } from "@/lib/hooks/authenitcation/authentication";
 import { HandleAlarmContext } from "@/lib/hooks/contexts/alarm-context";
 import { router } from "expo-router";
 import { FC, use, useState } from "react";
@@ -10,6 +11,8 @@ import { View } from "react-native";
 
 const HandleAlarmModal: FC = () => {
   const { logToHandle, setLogToHandle } = use(HandleAlarmContext);
+  const { accessToken } = use(AuthenticationContext);
+
   const [handle, setHandle] = useState<HandledLog>({
     id: logToHandle?.id,
   } as HandledLog);
@@ -28,7 +31,7 @@ const HandleAlarmModal: FC = () => {
       ></TextInputGroup>
       <TextInputGroup
         setValue={(value) =>
-          setHandle({ ...handle, handleDescription: value as string })
+          setHandle({ ...handle, HandledFeedback: value as string })
         }
         label={"Beskrivelse"}
         placeholder={"Beskrivelse af problem og løsning"}
@@ -39,7 +42,7 @@ const HandleAlarmModal: FC = () => {
           withLoader={true}
           onPress={async () => {
             setSubmitted(true);
-            const [, error] = await submitHandleLog(handle);
+            const [, error] = await submitHandleLog(handle, accessToken);
             setSubmitted(false);
 
             if (!error) {

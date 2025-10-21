@@ -1,13 +1,19 @@
 import Providers from "@/components/providers/provider.component";
 import { AuthenticationContext } from "@/lib/hooks/authenitcation/authentication";
 import { Stack } from "expo-router";
-import { FC, use } from "react";
+import { jwtDecode } from "jwt-decode";
+import { FC, use, useMemo } from "react";
 
 const Layout: FC = () => {
   const { accessToken } = use(AuthenticationContext);
+
+  const token = useMemo(() => {
+    return accessToken ? jwtDecode(accessToken) : null;
+  }, [accessToken]);
+
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={!!accessToken}>
+      <Stack.Protected guard={token?.roles?.includes("Technician") ?? false}>
         <Stack.Screen name="(drawer)" />
         <Stack.Screen
           name="(modals)"

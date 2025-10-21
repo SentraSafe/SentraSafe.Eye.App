@@ -5,6 +5,7 @@ import { ModalView } from "@/components/modal/modal.styled";
 import { submitUpdateAlarm } from "@/lib/api/alarm/alarm-api";
 import { CreateAlarm } from "@/lib/api/alarm/alarm-api.types";
 import { MeasurementTypes, Severities } from "@/lib/constants/shared";
+import { AuthenticationContext } from "@/lib/hooks/authenitcation/authentication";
 import { UpdateAlarmContext } from "@/lib/hooks/contexts/alarm-context";
 import { router } from "expo-router";
 import { FC, use, useState } from "react";
@@ -12,6 +13,8 @@ import { View } from "react-native";
 
 const AddAlarm: FC = () => {
   const { alarmToUpdate, setAlarmToUpdate } = use(UpdateAlarmContext);
+  const { accessToken } = use(AuthenticationContext);
+
   const [alarm, setAlarm] = useState<CreateAlarm>({ ...alarmToUpdate });
   const [submitted, setSubmitted] = useState(false);
 
@@ -77,7 +80,7 @@ const AddAlarm: FC = () => {
           withLoader={true}
           onPress={async () => {
             setSubmitted(true);
-            const [, error] = await submitUpdateAlarm(alarm);
+            const [, error] = await submitUpdateAlarm(alarm, accessToken);
             setSubmitted(false);
 
             if (!error) {

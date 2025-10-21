@@ -19,7 +19,12 @@ const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [notifications, setNotifications] = useState<Log[]>([]);
 
   return (
-    <NotificationContext value={{ notifications, setNotifications }}>
+    <NotificationContext
+      value={{
+        notifications: notifications,
+        setNotifications: setNotifications,
+      }}
+    >
       {children}
     </NotificationContext>
   );

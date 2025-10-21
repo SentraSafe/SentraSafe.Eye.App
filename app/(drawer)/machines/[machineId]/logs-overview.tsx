@@ -12,6 +12,7 @@ import {
 import { getLogs } from "@/lib/api/logs/logs-api";
 import { Log } from "@/lib/api/logs/logs-api.types";
 import { severityColor } from "@/lib/helpers/enum-helpers";
+import { AuthenticationContext } from "@/lib/hooks/authenitcation/authentication";
 import { HandleAlarmContext } from "@/lib/hooks/contexts/alarm-context";
 import { LogFilterContext } from "@/lib/hooks/contexts/notification-context";
 import { SeverityEnum } from "@/lib/types/shared";
@@ -23,23 +24,27 @@ import { FlatList, Text, View } from "react-native";
 const LogsOverview: FC = () => {
   const { machineId } = useLocalSearchParams();
   const { setLogToHandle: setAlarmToHandle } = use(HandleAlarmContext);
+  const { accessToken } = use(AuthenticationContext);
+
   const { logFilter } = use(LogFilterContext);
   const [logs, setLogs] = useState<Log[]>();
   const [selectedItem, setSelectedItem] = useState<Log>();
 
   const callback = useCallback(() => {
     const init = async () => {
-      console.log(logFilter);
-      const [logsResponse] = await getLogs({
-        ...logFilter,
-        machineId: Number(machineId),
-      });
+      const [logsResponse] = await getLogs(
+        {
+          ...logFilter,
+          machineId: Number(machineId),
+        },
+        accessToken
+      );
 
       setLogs(logsResponse);
     };
 
     init();
-  }, [logFilter, machineId]);
+  }, [accessToken, logFilter, machineId]);
 
   useFocusEffect(callback);
 
@@ -96,11 +101,11 @@ const LogsOverview: FC = () => {
                   ></IconOutlined>
                   <View style={{ paddingHorizontal: 20 }}>
                     <MediumTextBold>Tidspunkt: </MediumTextBold>
-                    <Text>{item.timeStamp.toLocaleString()}</Text>
-                    {item.value != null && (
+                    <Text>{item.timeCreated.toLocaleString()}</Text>
+                    {item.source != null && (
                       <Wrapper>
                         <MediumTextBold>Årsag: </MediumTextBold>
-                        <Text>{item.value}</Text>
+                        <Text>{item.source}</Text>
                       </Wrapper>
                     )}
                     <Wrapper>
@@ -110,13 +115,13 @@ const LogsOverview: FC = () => {
                     {selectedItem === item && item.isHandled && (
                       <>
                         <MediumTextBold>Håndteret tidspunkt: </MediumTextBold>
-                        <Text>{item.timeStamp.toLocaleString()}</Text>
+                        <Text>{item.handledAt?.toLocaleString()}</Text>
                         <Wrapper>
                           <MediumTextBold>Håndteret af: </MediumTextBold>
                           <Text>{item.handledBy}</Text>
                         </Wrapper>
                         <MediumTextBold>Beskrivelse: </MediumTextBold>
-                        <Text>{item.description}</Text>
+                        <Text>{item.handledFeedback}</Text>
                       </>
                     )}
                   </View>

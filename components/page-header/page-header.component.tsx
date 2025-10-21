@@ -1,15 +1,18 @@
 import { Ionicons } from "@expo/vector-icons";
-import { FC, ReactNode } from "react";
-import { Pressable } from "react-native";
+import { FC, ReactElement, ReactNode } from "react";
+import { Pressable, PressableProps } from "react-native";
 import { LargeHeader } from "../text-elements/text-elements.styled";
 import { StyledContainer, StyledIcon, Wrapper } from "./page-header.styled";
 
 const PageHeader: FC<{
+  icon?: () => ReactElement<PressableProps>;
   children?: ReactNode | string;
   iconType?: keyof typeof Ionicons.glyphMap;
   title?: string;
   onPress?: () => void;
-}> = ({ children, iconType, onPress, title }) => {
+}> = ({ children, iconType, onPress, title, icon }) => {
+  const iconElement = icon && icon();
+
   return (
     <StyledContainer>
       <Wrapper>
@@ -21,11 +24,13 @@ const PageHeader: FC<{
               children
             )))}
       </Wrapper>
-      {!!iconType && (
-        <Pressable style={{}} onPress={() => onPress && onPress()}>
-          <StyledIcon name={iconType} />
-        </Pressable>
-      )}
+      {icon
+        ? iconElement
+        : !!iconType && (
+            <Pressable onPress={() => onPress && onPress()}>
+              <StyledIcon name={iconType} />
+            </Pressable>
+          )}
     </StyledContainer>
   );
 };

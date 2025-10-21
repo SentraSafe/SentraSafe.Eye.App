@@ -8,7 +8,8 @@ import {
 const baseUrl = process.env.EXPO_PUBLIC_API_URL;
 
 export const getLogs = async (
-  requestParams?: GetLogsRequestParams
+  requestParams: GetLogsRequestParams | null,
+  accessToken: string
 ): Promise<GetLogsResponse> => {
   const url = new URL("/api/Log", baseUrl);
   const searchParams = new URLSearchParams({
@@ -18,11 +19,17 @@ export const getLogs = async (
     severity: requestParams?.severity?.toString() ?? "",
     timeStampFrom: requestParams?.timeStampFrom?.toISOString() ?? "",
     timeStampTo: requestParams?.timeStampTo?.toISOString() ?? "",
-    handleTimeFrom: requestParams?.handleTimeFrom?.toISOString() ?? "",
-    handleTimeTo: requestParams?.handleTimeTo?.toISOString() ?? "",
+    handledFrom: requestParams?.handledFrom?.toISOString() ?? "",
+    handledTo: requestParams?.handledTo?.toISOString() ?? "",
+    alarmIdNotNull: "true",
   });
   url.search = searchParams.toString();
-  const response = await fetch(url, { method: "GET" });
+  const response = await fetch(url, {
+    method: "GET",
+    headers: new Headers({
+      Authorization: `Bearer ${accessToken}`,
+    }),
+  });
 
   if (!response.ok) return [undefined, "Error"];
 
@@ -30,7 +37,8 @@ export const getLogs = async (
 };
 
 export const submitHandleLog = async (
-  handledLog: SubmitHandleLogRequestBody
+  handledLog: SubmitHandleLogRequestBody,
+  accessToken: string
 ): Promise<SubmitHandleLogResponse> => {
   const url = new URL("/api/Log/HandleLog", baseUrl);
   const response = await fetch(url, {
@@ -38,6 +46,7 @@ export const submitHandleLog = async (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 

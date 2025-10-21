@@ -9,31 +9,46 @@ const baseUrl = process.env.EXPO_PUBLIC_API_URL;
 const basePath = "/api/alarm";
 
 export const getAlarms = async (
-  machineId: number
+  machineId: number,
+  accessToken: string
 ): Promise<GetAlarmsResponse> => {
   const url = new URL(basePath, baseUrl);
   url.search = new URLSearchParams({
     machineId: machineId.toString(),
   }).toString();
-  const response = await fetch(url, { method: "GET" });
+  const response = await fetch(url, {
+    method: "GET",
+    headers: new Headers({
+      Authorization: `Bearer ${accessToken}`,
+    }),
+  });
   if (!response.ok) return [undefined, "Error"];
 
   return [await response.json(), undefined];
 };
 
-export const getAlarm = async (id: number): Promise<GetAlarmResponse> => {
+export const getAlarm = async (
+  id: number,
+  accessToken: string
+): Promise<GetAlarmResponse> => {
   const url = new URL(basePath, baseUrl);
   url.search = new URLSearchParams({
     id: id.toString(),
   }).toString();
-  const response = await fetch(url, { method: "GET" });
+  const response = await fetch(url, {
+    method: "GET",
+    headers: new Headers({
+      Authorization: `Bearer ${accessToken}`,
+    }),
+  });
   if (!response.ok) return [undefined, "Error"];
 
   return [await response.json(), undefined];
 };
 
 export const submitCreateAlarm = async (
-  alarm: CreateAlarmRequestBody
+  alarm: CreateAlarmRequestBody,
+  accessToken: string
 ): Promise<GetAlarmResponse> => {
   const url = new URL(basePath, baseUrl);
   const response = await fetch(url, {
@@ -41,6 +56,7 @@ export const submitCreateAlarm = async (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   if (!response.ok) return [undefined, "Error"];
@@ -49,7 +65,8 @@ export const submitCreateAlarm = async (
 };
 
 export const submitUpdateAlarm = async (
-  alarm: UpdateAlarmRequestBody
+  alarm: UpdateAlarmRequestBody,
+  accessToken: string
 ): Promise<GetAlarmResponse> => {
   const url = new URL(basePath, baseUrl);
   const response = await fetch(url, {
@@ -57,6 +74,7 @@ export const submitUpdateAlarm = async (
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   if (!response.ok) return [undefined, "Error"];
@@ -64,13 +82,19 @@ export const submitUpdateAlarm = async (
   return [await response.json(), undefined];
 };
 
-export const submitRemoveAlarm = async (alarmId?: number): Promise<any> => {
+export const submitRemoveAlarm = async (
+  alarmId: number | null,
+  accessToken: string
+): Promise<any> => {
   const url = new URL(basePath, baseUrl);
   url.search = new URLSearchParams({
     alarmId: alarmId?.toString() ?? "",
   }).toString();
   const response = await fetch(url, {
     method: "DELETE",
+    headers: new Headers({
+      Authorization: `Bearer ${accessToken}`,
+    }),
   });
   if (!response.ok) return [undefined, "Error"];
 
