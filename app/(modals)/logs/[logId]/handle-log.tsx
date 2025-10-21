@@ -6,15 +6,15 @@ import { HandledLog } from "@/lib/api/logs/logs-api.types";
 import { AuthenticationContext } from "@/lib/hooks/authenitcation/authentication";
 import { HandleAlarmContext } from "@/lib/hooks/contexts/alarm-context";
 import { router } from "expo-router";
-import { FC, use, useState } from "react";
+import { FC, useContext, useState } from "react";
 import { View } from "react-native";
 
 const HandleAlarmModal: FC = () => {
-  const { logToHandle, setLogToHandle } = use(HandleAlarmContext);
-  const { accessToken } = use(AuthenticationContext);
+  const { logToHandle, setLogToHandle } = useContext(HandleAlarmContext);
+  const { accessToken } = useContext(AuthenticationContext);
 
   const [handle, setHandle] = useState<HandledLog>({
-    id: logToHandle?.id,
+    id: logToHandle?.id as any,
   } as HandledLog);
   const [submitted, setSubmitted] = useState(false);
 
@@ -41,13 +41,13 @@ const HandleAlarmModal: FC = () => {
         <FormButton
           withLoader={true}
           onPress={async () => {
-            setSubmitted(true);
-            const [, error] = await submitHandleLog(handle, accessToken);
+              setSubmitted(true);
+              const [, error] = await submitHandleLog(handle, accessToken);
             setSubmitted(false);
 
-            if (!error) {
-              router.dismiss();
-              setLogToHandle(null);
+              if (!error) {
+                router.dismiss();
+                setLogToHandle(null);
             }
           }}
         >

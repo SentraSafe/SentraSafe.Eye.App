@@ -2,11 +2,11 @@ import FormButton from "@/components/buttons/form-button.component";
 import { LargeHeader } from "@/components/text-elements/text-elements.styled";
 import { AuthenticationContext } from "@/lib/hooks/authenitcation/authentication";
 import { router, useFocusEffect } from "expo-router";
-import { FC, use, useCallback, useRef } from "react";
+import { FC, useCallback, useContext, useRef } from "react";
 import { Text, View } from "react-native";
 
 const LoginScreen: FC = () => {
-  const { authenticate } = use(AuthenticationContext);
+  const { authenticate } = useContext(AuthenticationContext);
   const hasRun = useRef(false);
 
   const callback = useCallback(() => {
@@ -15,8 +15,12 @@ const LoginScreen: FC = () => {
     hasRun.current = true;
 
     const init = async () => {
-      await authenticate();
-      router.dismissTo("/(drawer)");
+      try {
+        await authenticate();
+        router.dismissTo("/(drawer)");
+      } catch (e) {
+        console.error("Authentication failed", e);
+      }
     };
 
     init();

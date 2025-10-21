@@ -2,13 +2,19 @@ import Providers from "@/components/providers/provider.component";
 import { AuthenticationContext } from "@/lib/hooks/authenitcation/authentication";
 import { Stack } from "expo-router";
 import { jwtDecode } from "jwt-decode";
-import { FC, use, useMemo } from "react";
+import { FC, useContext, useMemo } from "react";
 
 const Layout: FC = () => {
-  const { accessToken } = use(AuthenticationContext);
+  const { accessToken } = useContext(AuthenticationContext);
 
   const token = useMemo(() => {
-    return accessToken ? jwtDecode(accessToken) : null;
+    if (!accessToken) return null;
+    try {
+      return jwtDecode(accessToken) as any;
+    } catch (e) {
+      console.warn("Invalid access token", e);
+      return null;
+    }
   }, [accessToken]);
 
   return (

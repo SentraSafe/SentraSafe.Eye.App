@@ -15,9 +15,11 @@ type AuthenticationStore = {
   idToken: string;
 };
 
-const AuthenticationContext = createContext<AuthenticationStore>(
-  {} as AuthenticationStore
-);
+const AuthenticationContext = createContext<AuthenticationStore>({
+  authenticate: async () => {},
+  accessToken: "",
+  idToken: "",
+});
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -41,8 +43,8 @@ const AuthenticationProvider: FC<{ children: ReactNode }> = ({ children }) => {
     discovery
   );
 
-  const discoveryRef = useRef<AuthSession.DiscoveryDocument>(null);
-  const requestRef = useRef<AuthSession.AuthRequest>(null);
+  const discoveryRef = useRef<AuthSession.DiscoveryDocument | null>(null);
+  const requestRef = useRef<AuthSession.AuthRequest | null>(null);
   const promptRef =
     useRef<
       (
@@ -50,11 +52,11 @@ const AuthenticationProvider: FC<{ children: ReactNode }> = ({ children }) => {
       ) => Promise<AuthSession.AuthSessionResult>
     >(promptAsync);
 
-  const resolveReadyRef = useRef<() => void>(null);
+  const resolveReadyRef = useRef<() => void | null>(null);
 
   useEffect(() => {
-    discoveryRef.current = discovery;
-    requestRef.current = request;
+    discoveryRef.current = discovery ?? null;
+    requestRef.current = request ?? null;
     promptRef.current = promptAsync;
     if (requestRef.current && resolveReadyRef.current)
       resolveReadyRef.current();
@@ -74,6 +76,12 @@ const AuthenticationProvider: FC<{ children: ReactNode }> = ({ children }) => {
     if (response.type === "success") {
       const { code } = response.params;
 
+      const discoveryDoc = discoveryRef.current;
+      if (!discoveryDoc) {
+        console.error("OIDC discovery failed; cannot exchange auth code.");
+        return;
+      }
+
       const tokenResponse = await AuthSession.exchangeCodeAsync(
         {
           code: code,
@@ -85,7 +93,7 @@ const AuthenticationProvider: FC<{ children: ReactNode }> = ({ children }) => {
             code_verifier: requestRef.current?.codeVerifier ?? "",
           },
         },
-        discoveryRef.current!
+        discoveryDoc
       );
 
       setAccessToken(tokenResponse.accessToken);
