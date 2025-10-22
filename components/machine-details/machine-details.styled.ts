@@ -6,6 +6,9 @@ export const Overview = styled.View`
   border-color: #bdbdbdff;
   border-width: 2px;
   border-radius: 20px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 export const OverviewLabel = styled.Text`

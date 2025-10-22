@@ -1,5 +1,6 @@
 import { Log } from "@/lib/api/logs/logs-api.types";
 import { Machine } from "@/lib/api/machine/machine-api.types";
+import { MachineType } from "@/lib/constants/shared";
 import { severityColor } from "@/lib/helpers/enum-helpers";
 import useSignalR from "@/lib/hooks/signalr-clients/signalr-client-hook";
 import { SeverityEnum } from "@/lib/types/shared";
@@ -15,7 +16,6 @@ import {
   MediumTextBold,
 } from "../text-elements/text-elements.styled";
 import { TextWrapper, Wrapper } from "./carousel.styled";
-import {MachineType} from "@/lib/constants/shared";
 
 type Props = {
   groupSize: number;
@@ -83,10 +83,12 @@ const CarouselItem: FC<Props> = ({ groupSize, machines, width, height }) => {
                     <MediumTextBold>Intern lokation: </MediumTextBold>
                     <MediumText>{x.sublocation}</MediumText>
                   </TextWrapper>
-                    <TextWrapper>
+                  <TextWrapper>
                     <MediumTextBold>Maskine type: </MediumTextBold>
-                    <MediumText>{MachineType.find(y => y.value == x.type)?.value}</MediumText>
-                    </TextWrapper>
+                    <MediumText>
+                      {MachineType.find((y) => y.value === x.type)?.type}
+                    </MediumText>
+                  </TextWrapper>
                   <TextWrapper>
                     <MediumTextBold>Status: </MediumTextBold>
                     <Ionicons

@@ -1,11 +1,12 @@
 import FloatingButton from "@/components/buttons/add-button.component";
 import MeasurementOverview from "@/components/machine-details/measurement-overview/details-sensor-overview.component";
 import DetailsOverview from "@/components/machine-details/overview/details-overview.component";
+import { Log } from "@/lib/api/logs/logs-api.types";
 import { getMachine } from "@/lib/api/machine/machine-api";
 import { Machine as MachineDetails } from "@/lib/api/machine/machine-api.types";
 import { AuthenticationContext } from "@/lib/hooks/authenitcation/authentication";
 import useSignalR from "@/lib/hooks/signalr-clients/signalr-client-hook";
-import { MeasurementData } from "@/lib/types/shared";
+import { MeasurementData, SeverityEnum } from "@/lib/types/shared";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { FC, use, useCallback, useState } from "react";
 import { View } from "react-native";
@@ -15,14 +16,17 @@ const MachineDetailsPage: FC = () => {
   const { accessToken } = use(AuthenticationContext);
 
   const [machine, setMachine] = useState<MachineDetails>();
+  const [severity, setSeverity] = useState<SeverityEnum>();
   const [measurements, setMeasurements] = useState<MeasurementData[]>();
-  const { subscribe } = useSignalR<MeasurementData[]>("MachineHub");
+  const { subscribe: machineSubscribe } =
+    useSignalR<MeasurementData[]>("MachineHub");
+  const { subscribe: alarmSubscribe } = useSignalR<Log[]>("AlarmHub");
 
   const callback = useCallback(() => {
     const init = async () => {
       const [machineResponse, measurementsResponse] = await Promise.all([
         getMachine(Number(machineId), accessToken),
-        subscribe(
+        machineSubscribe(
           "SubscribeToMachine",
           machineId as string,
           "update",
@@ -40,6 +44,18 @@ const MachineDetailsPage: FC = () => {
           }
         ),
       ]);
+      const eventLogs = await alarmSubscribe(
+        "SubscribeToAlarms",
+        [`${machineId}`],
+        "updateEvents",
+        (eventLogs: Log[]) => {
+          if (eventLogs?.length) {
+            setSeverity(eventLogs[0].severity);
+          }
+        }
+      );
+
+      if (eventLogs) setSeverity(eventLogs[0].severity);
       if (measurementsResponse?.length) setMeasurements(measurementsResponse);
       const [machineData] = machineResponse;
 
@@ -47,13 +63,13 @@ const MachineDetailsPage: FC = () => {
     };
 
     init();
-  }, [accessToken, machineId, subscribe]);
+  }, [accessToken, alarmSubscribe, machineId, machineSubscribe]);
 
   useFocusEffect(callback);
 
   return (
     <View style={{ flex: 1 }}>
-      <DetailsOverview machine={machine}></DetailsOverview>
+      <DetailsOverview machine={machine} severity={severity}></DetailsOverview>
       <MeasurementOverview measurements={measurements}></MeasurementOverview>
       <FloatingButton
         icon="alarm"
