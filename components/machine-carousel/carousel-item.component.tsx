@@ -3,7 +3,6 @@ import { Machine } from "@/lib/api/machine/machine-api.types";
 import { MachineType } from "@/lib/constants/shared";
 import { severityColor } from "@/lib/helpers/enum-helpers";
 import { AlarmHubContext } from "@/lib/hooks/contexts/signalr-client.context";
-import useSignalR from "@/lib/hooks/signalr-clients/signalr-client-hook";
 import { SeverityEnum } from "@/lib/types/shared";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
@@ -26,7 +25,6 @@ type Props = {
 };
 
 const CarouselItem: FC<Props> = ({ groupSize, machines, width, height }) => {
-  const { subscribe, unsubscribe } = useSignalR<Log[]>("AlarmHub");
   const [severities, setSeverities] = useState<SeverityEnum[]>([]);
   const alarmConnection = use(AlarmHubContext);
 
