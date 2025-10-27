@@ -12,24 +12,32 @@ import {
   LogFilterProvider,
   NotificationProvider,
 } from "@/lib/hooks/contexts/notification-context";
+import {
+  AlarmHubProvider,
+  MachineHubProvider,
+} from "@/lib/hooks/contexts/signalr-client.context";
 import { FC, ReactNode } from "react";
 
 const Providers: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <AuthenticationProvider>
-      <NotificationProvider>
-        <LogFilterProvider>
-          <LocationProvider>
-            <CreateMachineProvider>
-              <MachineFilterProvider>
-                <UpdateAlarmProvider>
-                  <HandleAlarmProvider>{children}</HandleAlarmProvider>
-                </UpdateAlarmProvider>
-              </MachineFilterProvider>
-            </CreateMachineProvider>
-          </LocationProvider>
-        </LogFilterProvider>
-      </NotificationProvider>
+      <AlarmHubProvider>
+        <MachineHubProvider>
+          <NotificationProvider>
+            <LogFilterProvider>
+              <LocationProvider>
+                <CreateMachineProvider>
+                  <MachineFilterProvider>
+                    <UpdateAlarmProvider>
+                      <HandleAlarmProvider>{children}</HandleAlarmProvider>
+                    </UpdateAlarmProvider>
+                  </MachineFilterProvider>
+                </CreateMachineProvider>
+              </LocationProvider>
+            </LogFilterProvider>
+          </NotificationProvider>
+        </MachineHubProvider>
+      </AlarmHubProvider>
     </AuthenticationProvider>
   );
 };

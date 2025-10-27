@@ -2,11 +2,12 @@ import { Log } from "@/lib/api/logs/logs-api.types";
 import { Machine } from "@/lib/api/machine/machine-api.types";
 import { MachineType } from "@/lib/constants/shared";
 import { severityColor } from "@/lib/helpers/enum-helpers";
+import { AlarmHubContext } from "@/lib/hooks/contexts/signalr-client.context";
 import useSignalR from "@/lib/hooks/signalr-clients/signalr-client-hook";
 import { SeverityEnum } from "@/lib/types/shared";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { FC, useEffect, useState } from "react";
+import { FC, use, useEffect, useState } from "react";
 import { View } from "react-native";
 import IconOutlined from "../icons/icon-outlined.component";
 import { Card } from "../machine-card/card.styled";
@@ -27,34 +28,32 @@ type Props = {
 const CarouselItem: FC<Props> = ({ groupSize, machines, width, height }) => {
   const { subscribe, unsubscribe } = useSignalR<Log[]>("AlarmHub");
   const [severities, setSeverities] = useState<SeverityEnum[]>([]);
+  const alarmConnection = use(AlarmHubContext);
 
-  useEffect(() => {
-    machines?.forEach(async (x, index) => {
-      const eventLogs = await subscribe(
-        "SubscribeToAlarms",
-        [`${x.id}`],
-        "updateEvents",
-        (eventLogs: Log[]) => {
-          if (eventLogs?.length) {
-            setSeverities((prev: SeverityEnum[]) => {
-              return machines.map((x, thisIndex) => {
-                if (index !== thisIndex) return prev[thisIndex];
+  useEffect(
+    () =>
+      machines?.forEach(async (x, index) => {
+        alarmConnection
+          ?.invoke("SubscribeToAlarms", [x.id.toString()])
+          .then((payload: Log[]) => {
+            if (payload?.length) {
+              setSeverities((prev) => [
+                ...prev,
+                payload?.sort((a, b) => a.severity - b.severity)[0]?.severity ??
+                  SeverityEnum.Information,
+              ]);
+            }
+          });
 
-                return eventLogs.sort((a, b) => a.severity - b.severity)[0]
-                  ?.severity;
-              });
-            });
+        alarmConnection?.on("updateEvents", (payload) => {
+          if (payload?.length) {
+            setSeverities(payload[0].severity);
           }
-        }
-      );
+        });
+      }),
 
-      setSeverities((prev) => [
-        ...prev,
-        eventLogs?.sort((a, b) => a.severity - b.severity)[0]?.severity ??
-          SeverityEnum.Information,
-      ]);
-    });
-  }, [machines, subscribe]);
+    [alarmConnection, machines]
+  );
 
   return (
     <Wrapper groupSize={groupSize} height={height}>

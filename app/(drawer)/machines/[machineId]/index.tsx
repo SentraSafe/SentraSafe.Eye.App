@@ -5,8 +5,12 @@ import { Log } from "@/lib/api/logs/logs-api.types";
 import { getMachine } from "@/lib/api/machine/machine-api";
 import { Machine as MachineDetails } from "@/lib/api/machine/machine-api.types";
 import { AuthenticationContext } from "@/lib/hooks/authenitcation/authentication";
-import useSignalR from "@/lib/hooks/signalr-clients/signalr-client-hook";
+import {
+  AlarmHubContext,
+  MachineHubContext,
+} from "@/lib/hooks/contexts/signalr-client.context";
 import { MeasurementData, SeverityEnum } from "@/lib/types/shared";
+import { HubConnectionState } from "@microsoft/signalr";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { FC, use, useCallback, useState } from "react";
 import { View } from "react-native";
@@ -15,55 +19,78 @@ const MachineDetailsPage: FC = () => {
   const { machineId } = useLocalSearchParams();
   const { accessToken } = use(AuthenticationContext);
 
+  const alarmConnection = use(AlarmHubContext);
+  const machineConnection = use(MachineHubContext);
+
   const [machine, setMachine] = useState<MachineDetails>();
   const [severity, setSeverity] = useState<SeverityEnum>();
   const [measurements, setMeasurements] = useState<MeasurementData[]>();
-  const { subscribe: machineSubscribe } =
-    useSignalR<MeasurementData[]>("MachineHub");
-  const { subscribe: alarmSubscribe } = useSignalR<Log[]>("AlarmHub");
+
+  const initAlarm = useCallback(() => {
+    alarmConnection
+      ?.invoke("SubscribeToAlarms", [machineId.toString()])
+      .then((payload: Log[]) => {
+        if (payload?.length) {
+          setSeverity(payload[0].severity);
+        }
+      });
+
+    alarmConnection?.on("updateEvents", (payload) => {
+      if (payload?.length) {
+        setSeverity(payload[0].severity);
+      }
+    });
+  }, [alarmConnection, machineId]);
+
+  const initMachine = useCallback(() => {
+    machineConnection
+      ?.invoke("SubscribeToMachine", machineId.toString())
+      .then((payload: MeasurementData[]) => {
+        if (payload) {
+          setMeasurements(payload);
+        }
+      });
+
+    machineConnection?.on("update", (payload: MeasurementData) => {
+      if (payload) {
+        setMeasurements((prev) => {
+          if (prev)
+            return [
+              ...prev.filter(
+                (x) => x.measurementType !== payload?.measurementType
+              ),
+              payload,
+            ].sort((a, b) => a.measurementType - b.measurementType);
+          return payload ? [payload] : [];
+        });
+      }
+    });
+  }, [machineConnection, machineId]);
 
   const callback = useCallback(() => {
-    const init = async () => {
-      const [machineResponse, measurementsResponse] = await Promise.all([
-        getMachine(Number(machineId), accessToken),
-        machineSubscribe(
-          "SubscribeToMachine",
-          machineId as string,
-          "update",
-          (payload: MeasurementData) => {
-            setMeasurements((prev) => {
-              if (prev)
-                return [
-                  ...prev.filter(
-                    (x) => x.measurementType !== payload?.measurementType
-                  ),
-                  payload,
-                ].sort((a, b) => a.measurementType - b.measurementType);
-              return payload ? [payload] : [];
-            });
-          }
-        ),
-      ]);
-      const eventLogs = await alarmSubscribe(
-        "SubscribeToAlarms",
-        [`${machineId}`],
-        "updateEvents",
-        (eventLogs: Log[]) => {
-          if (eventLogs?.length) {
-            setSeverity(eventLogs[0].severity);
-          }
-        }
-      );
+    getMachine(Number(machineId), accessToken).then((response) => {
+      const [data] = response;
 
-      if (eventLogs) setSeverity(eventLogs[0].severity);
-      if (measurementsResponse?.length) setMeasurements(measurementsResponse);
-      const [machineData] = machineResponse;
+      setMachine(data);
+    });
 
-      setMachine(machineData);
-    };
+    if (
+      ![alarmConnection?.state, machineConnection?.state].every(
+        (x) => x === HubConnectionState.Connected
+      )
+    )
+      return;
 
-    init();
-  }, [accessToken, alarmSubscribe, machineId, machineSubscribe]);
+    initAlarm();
+    initMachine();
+  }, [
+    accessToken,
+    alarmConnection,
+    initAlarm,
+    initMachine,
+    machineConnection,
+    machineId,
+  ]);
 
   useFocusEffect(callback);
 

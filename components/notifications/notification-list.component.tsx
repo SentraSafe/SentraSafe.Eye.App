@@ -1,9 +1,10 @@
 import { Log } from "@/lib/api/logs/logs-api.types";
 import { NotificationContext } from "@/lib/hooks/contexts/notification-context";
-import useSignalR from "@/lib/hooks/signalr-clients/signalr-client-hook";
+import { AlarmHubContext } from "@/lib/hooks/contexts/signalr-client.context";
 import { Ionicons } from "@expo/vector-icons";
+import { HubConnectionState } from "@microsoft/signalr";
 import { Link } from "expo-router";
-import { FC, useContext, useEffect, useRef } from "react";
+import { FC, use, useContext, useEffect } from "react";
 import { Text, View } from "react-native";
 import {
   DrawerMenuItem,
@@ -12,82 +13,67 @@ import {
 } from "../drawer-menu/drawer-menu.styled";
 
 const NotificationList: FC = () => {
-  const { subscribe } = useSignalR<Log[]>("AlarmHub");
+  const connection = use(AlarmHubContext);
   const { notifications, setNotifications } = useContext(NotificationContext);
-  const isSubscribed = useRef(false);
 
   useEffect(() => {
-    if (isSubscribed.current) return;
-
-    const init = async () => {
-      try {
-        const logs = await subscribe(
-          "SubscribeToNotifications",
-          null,
-          "notifications",
-          (payload: Log[]) => {
-            setNotifications((prev: Log[]) => {
-              const prevArr = Array.isArray(prev) ? prev : [];
-              const next = Array.isArray(payload) ? payload : [];
-              return [...next, ...prevArr];
-            });
-          }
-        );
-        if (logs) setNotifications(logs as Log[]);
-        isSubscribed.current = true;
-      } catch (e) {
-        console.error("Notification subscription failed", e);
-      }
-    };
-
-    init();
-  }, [setNotifications, subscribe]);
+    connection?.on("notifications", (payload) =>
+      setNotifications((prev) => [...payload, prev])
+    );
+    console.log(connection);
+    if (connection?.state !== HubConnectionState.Connected) return;
+    connection?.invoke("SubscribeToNotifications").then((payload: Log[]) => {
+      console.log(payload);
+      console.log(connection);
+      setNotifications(payload);
+    });
+  }, [setNotifications, connection]);
 
   return (
     <View>
       {notifications?.map((notification, index) => (
         <DrawerMenuItem severity={notification.severity} key={index}>
-            <MenuItemButtonWrapper
-              style={{ flexDirection: "row", alignItems: "center" }}
-            >
-              <MenuItemButton
-                style={{ height: "100%" }}
-                onPress={() =>
-                  setNotifications([
-                    ...notifications.filter((x) => x !== notification),
-                  ])
-                }
-              >
-                <Ionicons
-                  name="close"
-                  style={{
-                    fontSize: 15,
-                    marginRight: 10,
-                  }}
-                />
-              </MenuItemButton>
-              <View>
-              <Text>{notification.timeCreated.toLocaleString()}</Text>
-                <Text ellipsizeMode="tail">{notification.source}</Text>
-              </View>
-            </MenuItemButtonWrapper>
-            <Link
-              href={{
-                pathname: "/machines/[machineId]/logs-overview",
-                params: {
-                  machineId: notification.machineId,
-                },
-              }}
+          <MenuItemButtonWrapper
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
+            <MenuItemButton
+              style={{ height: "100%" }}
+              onPress={() =>
+                setNotifications([
+                  ...notifications.filter((x) => x !== notification),
+                ])
+              }
             >
               <Ionicons
-                name="log-in-outline"
+                name="close"
                 style={{
-                  fontSize: 30,
+                  fontSize: 15,
                   marginRight: 10,
                 }}
               />
-            </Link>
-          </DrawerMenuItem>
+            </MenuItemButton>
+            <View>
+              <Text>{notification.timeCreated.toLocaleString()}</Text>
+              <Text ellipsizeMode="tail">{notification.source}</Text>
+            </View>
+          </MenuItemButtonWrapper>
+          <Link
+            href={{
+              pathname: "/machines/[machineId]/logs-overview",
+              params: {
+                machineId: notification.machineId,
+              },
+            }}
+          >
+            <Ionicons
+              name="log-in-outline"
+              style={{
+                fontSize: 30,
+                marginRight: 10,
+              }}
+            />
+          </Link>
+        </DrawerMenuItem>
       ))}
     </View>
   );
