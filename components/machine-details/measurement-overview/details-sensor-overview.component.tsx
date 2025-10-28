@@ -1,7 +1,7 @@
 import { MeasurementTypes } from "@/lib/constants/shared";
-import { MeasurementData } from "@/lib/types/shared";
+import { MeasurementData, MeasurementEnum } from "@/lib/types/shared";
 import { FC } from "react";
-import { Text, View } from "react-native";
+import { FlatList, Text } from "react-native";
 import { MeasurementContainer, OverviewLabel } from "../machine-details.styled";
 
 type Props = {
@@ -10,26 +10,29 @@ type Props = {
 
 const MeasurementOverview: FC<Props> = ({ measurements }) => {
   return (
-    <View
+    <FlatList
+      data={measurements?.filter(
+        (x) => x.measurementType !== MeasurementEnum.UpTime
+      )}
+      numColumns={2}
+      contentContainerStyle={{ flex: 1 }}
       style={{
         flexDirection: "row",
-        justifyContent: "space-between",
         marginHorizontal: 20,
+        width: "100%",
       }}
-    >
-      {measurements?.map((measurement, index) => (
-        <MeasurementContainer key={measurement.measurementType}>
+      renderItem={({ item }) => (
+        <MeasurementContainer>
           <OverviewLabel>
             {
-              MeasurementTypes.find(
-                (x) => x.value === measurement.measurementType
-              )?.type
+              MeasurementTypes.find((x) => x.value === item.measurementType)
+                ?.type
             }
           </OverviewLabel>
-          <Text>{measurement.value}</Text>
+          <Text>{item.value}</Text>
         </MeasurementContainer>
-      ))}
-    </View>
+      )}
+    ></FlatList>
   );
 };
 

@@ -84,8 +84,8 @@ const AddAlarm: FC = () => {
             setSubmitted(false);
 
             if (!error) {
-              router.dismiss();
               setAlarmToUpdate(null);
+              router.dismiss();
             }
           }}
         >

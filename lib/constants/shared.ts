@@ -16,6 +16,9 @@ export const Severities: Severity[] = [
 export const MeasurementTypes: Measurement[] = [
   { type: "Temperatur", value: 0 },
   { type: "Luftfugtighed", value: 1 },
+  { type: "Ram", value: 2 },
+  { type: "Cpu", value: 3 },
+  { type: "Disk", value: 4 },
 ];
 
 export const MachineType: Machine[] = [

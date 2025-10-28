@@ -2,7 +2,6 @@ import { Log } from "@/lib/api/logs/logs-api.types";
 import { NotificationContext } from "@/lib/hooks/contexts/notification-context";
 import { AlarmHubContext } from "@/lib/hooks/contexts/signalr-client.context";
 import { Ionicons } from "@expo/vector-icons";
-import { HubConnectionState } from "@microsoft/signalr";
 import { Link } from "expo-router";
 import { FC, use, useContext, useEffect } from "react";
 import { Text, View } from "react-native";
@@ -18,21 +17,21 @@ const NotificationList: FC = () => {
 
   useEffect(() => {
     connection?.on("notifications", (payload) =>
-      setNotifications((prev) => [...payload, prev])
+      setNotifications((prev) => {
+        return [...payload, ...prev];
+      })
     );
     console.log(connection);
-    if (connection?.state !== HubConnectionState.Connected) return;
     connection?.invoke("SubscribeToNotifications").then((payload: Log[]) => {
-      console.log(payload);
-      console.log(connection);
       setNotifications(payload);
     });
+    return () => connection?.off("notifications");
   }, [setNotifications, connection]);
 
   return (
     <View>
       {notifications?.map((notification, index) => (
-        <DrawerMenuItem severity={notification.severity} key={index}>
+        <DrawerMenuItem severity={notification?.severity} key={notification.id}>
           <MenuItemButtonWrapper
             style={{ flexDirection: "row", alignItems: "center" }}
           >
@@ -53,15 +52,15 @@ const NotificationList: FC = () => {
               />
             </MenuItemButton>
             <View>
-              <Text>{notification.timeCreated.toLocaleString()}</Text>
-              <Text ellipsizeMode="tail">{notification.source}</Text>
+              <Text>{notification?.timeCreated?.toLocaleString()}</Text>
+              <Text ellipsizeMode="tail">{notification?.source ?? "Abe"}</Text>
             </View>
           </MenuItemButtonWrapper>
           <Link
             href={{
               pathname: "/machines/[machineId]/logs-overview",
               params: {
-                machineId: notification.machineId,
+                machineId: notification?.machineId,
               },
             }}
           >

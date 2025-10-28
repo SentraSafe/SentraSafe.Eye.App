@@ -28,30 +28,28 @@ const CarouselItem: FC<Props> = ({ groupSize, machines, width, height }) => {
   const [severities, setSeverities] = useState<SeverityEnum[]>([]);
   const alarmConnection = use(AlarmHubContext);
 
-  useEffect(
-    () =>
-      machines?.forEach(async (x, index) => {
-        alarmConnection
-          ?.invoke("SubscribeToAlarms", [x.id.toString()])
-          .then((payload: Log[]) => {
-            if (payload?.length) {
-              setSeverities((prev) => [
-                ...prev,
-                payload?.sort((a, b) => a.severity - b.severity)[0]?.severity ??
-                  SeverityEnum.Information,
-              ]);
-            }
-          });
-
-        alarmConnection?.on("updateEvents", (payload) => {
+  useEffect(() => {
+    machines?.forEach(async (x, index) => {
+      alarmConnection
+        ?.invoke("SubscribeToAlarms", [x.id.toString()])
+        .then((payload: Log[]) => {
           if (payload?.length) {
-            setSeverities(payload[0].severity);
+            setSeverities((prev) => [
+              ...prev,
+              payload?.sort((a, b) => a.severity - b.severity)[0]?.severity ??
+                SeverityEnum.Information,
+            ]);
           }
         });
-      }),
 
-    [alarmConnection, machines]
-  );
+      alarmConnection?.on("updateEvents", (payload) => {
+        if (payload?.length) {
+          setSeverities(payload[0].severity);
+        }
+      });
+    });
+    return () => alarmConnection?.off("updateEvents");
+  }, [alarmConnection, machines]);
 
   return (
     <Wrapper groupSize={groupSize} height={height}>

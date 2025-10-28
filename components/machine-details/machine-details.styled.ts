@@ -22,12 +22,13 @@ export const Wrapper = styled.View`
 `;
 
 export const MeasurementContainer = styled.View`
-  flex-basis: 48%;
   padding: 20px;
   border-color: #bdbdbdff;
   border-width: 2px;
   border-radius: 20px;
   height: 80px;
+  margin: 10px;
+  width: 40%;
 `;
 
 export const AlarmContainer = styled.View`

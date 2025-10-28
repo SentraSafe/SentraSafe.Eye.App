@@ -83,6 +83,11 @@ const MachineDetailsPage: FC = () => {
 
     initAlarm();
     initMachine();
+
+    return () => {
+      alarmConnection?.off("updateEvents");
+      machineConnection?.off("update");
+    };
   }, [
     accessToken,
     alarmConnection,

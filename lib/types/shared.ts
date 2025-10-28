@@ -1,7 +1,7 @@
 export type MeasurementData = {
   readingTime: Date;
   value: number;
-  measurementType: number;
+  measurementType: MeasurementEnum;
   device: string;
 };
 
@@ -36,11 +36,16 @@ export enum SeverityEnum {
   Critical = 3,
 }
 
-export type MeasurementType = "Temperatur" | "Luftfugtighed";
+export type MeasurementType =
+  | "Temperatur"
+  | "Luftfugtighed"
+  | "Ram"
+  | "Cpu"
+  | "Disk";
 
 export type Measurement = {
   type: MeasurementType;
-  value: number;
+  value: MeasurementEnum;
 };
 
 export type Machine = {
@@ -53,6 +58,15 @@ export type MachineType =
   | "ConveyorSystem"
   | "ChemicalMixer"
   | "Other";
+
+export enum MeasurementEnum {
+  Temperature = 0,
+  Humidity = 1,
+  RamUsage = 2,
+  CpuUsage = 3,
+  DiskSpaceUsed = 4,
+  UpTime = 5,
+}
 
 export enum MachineEnum {
   Server = 0,

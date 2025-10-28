@@ -17,11 +17,16 @@ const MachineHubProvider: FC<{ children: ReactNode }> = ({ children }) => {
   useEffect(() => {
     const conn = new HubConnectionBuilder()
       .withUrl(new URL("MachineHub", baseUrl).toString())
-      .configureLogging(LogLevel.Error)
+      .configureLogging(LogLevel.None)
       .withAutomaticReconnect()
       .build();
 
     conn.start().then(() => setConnection(conn));
+    conn.onclose(() => {
+      console.log("Machine Hub Disconnected");
+      setConnection(null);
+      conn.start().then(() => setConnection(conn));
+    });
 
     return () => {};
   }, []);
@@ -35,11 +40,16 @@ const AlarmHubProvider: FC<{ children: ReactNode }> = ({ children }) => {
   useEffect(() => {
     const conn = new HubConnectionBuilder()
       .withUrl(new URL("AlarmHub", baseUrl).toString())
-      .configureLogging(LogLevel.Error)
+      .configureLogging(LogLevel.None)
       .withAutomaticReconnect()
       .build();
 
     conn.start().then(() => setConnection(conn));
+    conn.onclose(() => {
+      console.log("Alarm Hub Disconnected");
+      setConnection(null);
+      conn.start().then(() => setConnection(conn));
+    });
 
     return () => {};
   }, []);

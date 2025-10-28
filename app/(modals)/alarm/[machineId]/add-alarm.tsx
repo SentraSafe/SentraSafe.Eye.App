@@ -78,7 +78,11 @@ const AddAlarm: FC = () => {
             const [, error] = await submitCreateAlarm(alarm, accessToken);
             setSubmitted(false);
 
-            if (!error) router.dismiss();
+            if (!error)
+              router.dismissTo({
+                pathname: "/(drawer)/machines/[machineId]/alarm-overview",
+                params: { machineId: machineId as string },
+              });
           }}
         >
           Tilføj
