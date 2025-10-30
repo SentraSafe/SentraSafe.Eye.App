@@ -96,6 +96,8 @@ const AuthenticationProvider: FC<{ children: ReactNode }> = ({ children }) => {
         discoveryDoc
       );
 
+      console.log("Token response", accessToken);
+
       setAccessToken(tokenResponse.accessToken);
       if (tokenResponse.idToken) {
         setIdToken(tokenResponse.idToken);

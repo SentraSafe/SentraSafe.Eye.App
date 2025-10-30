@@ -2,6 +2,7 @@ import { Log } from "@/lib/api/logs/logs-api.types";
 import { NotificationContext } from "@/lib/hooks/contexts/notification-context";
 import { AlarmHubContext } from "@/lib/hooks/contexts/signalr-client.context";
 import { Ionicons } from "@expo/vector-icons";
+import { HubConnectionState } from "@microsoft/signalr";
 import { Link } from "expo-router";
 import { FC, use, useContext, useEffect } from "react";
 import { Text, View } from "react-native";
@@ -21,10 +22,23 @@ const NotificationList: FC = () => {
         return [...payload, ...prev];
       })
     );
-    console.log(connection);
-    connection?.invoke("SubscribeToNotifications").then((payload: Log[]) => {
-      setNotifications(payload);
-    });
+
+    const invoke = async () => {
+      await connection
+        ?.invoke("SubscribeToNotifications")
+        .then((payload: Log[]) => {
+          setNotifications(payload);
+        });
+    };
+
+    if (
+      connection?.state === HubConnectionState.Connecting ||
+      connection?.state === HubConnectionState.Reconnecting
+    ) {
+      setTimeout(async () => {
+        await invoke();
+      }, 1000);
+    } else invoke();
     return () => connection?.off("notifications");
   }, [setNotifications, connection]);
 
